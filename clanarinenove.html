@@ -1081,6 +1081,47 @@ function monthLabel(value){
         " " + parts[0];
 }
 
+function sendPaymentEmail(id, month){
+
+    const member = members[id];
+
+    if(!member){
+        return;
+    }
+
+    if(!member.email){
+        alert("Ovaj član nema upisan email.");
+        return;
+    }
+
+    const monthText = monthLabel(month);
+    const price = formatMoney(member.price);
+
+    const subject =
+        "Potvrda uplate članarine — KK TEMPO";
+
+    const body =
+        "Poštovani " + (member.name || "") + ",\n\n" +
+        "evidentirana je uplata članarine za " +
+        monthText + ".\n\n" +
+        "Član: " + (member.name || "") + "\n" +
+        "Šifra člana: " + id + "\n" +
+        "Iznos članarine: " + price + "\n" +
+        "Status: PLAĆENO\n\n" +
+        "Hvala na poverenju,\n" +
+        "KK Tempo Bratunac";
+
+    const mailto =
+        "mailto:" +
+        member.email +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+
+    window.open(mailto, "_blank");
+}
+
 function setPaid(id, month){
 
     const member = members[id];
@@ -1097,8 +1138,28 @@ function setPaid(id, month){
     saveData();
     renderTable();
     updateMemberDetails();
-}
 
+    if(member.email){
+
+        const sendMail = confirm(
+            "Uplata je uspešno evidentirana.\n\n" +
+            "Da li želiš da pošalješ potvrdu uplate na:\n" +
+            member.email
+        );
+
+        if(sendMail){
+            sendPaymentEmail(id, month);
+        }
+
+    }else{
+
+        alert(
+            "Uplata je uspešno evidentirana.\n\n" +
+            "Član nema upisan email."
+        );
+
+    }
+}
 function setUnpaid(id, month){
 
     const member = members[id];
