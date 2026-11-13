@@ -1101,11 +1101,10 @@ function sendPaymentEmail(id, month){
         "Potvrda uplate članarine — KK TEMPO";
 
     const body =
-        "Poštovani " + (member.name || "") + ",\n\n" +
+        "Poštovani " 
         "evidentirana je uplata članarine za " +
         monthText + ".\n\n" +
         "Član: " + (member.name || "") + "\n" +
-        "Šifra člana: " + id + "\n" +
         "Iznos članarine: " + price + "\n" +
         "Status: PLAĆENO\n\n" +
         "Hvala na poverenju,\n" +
