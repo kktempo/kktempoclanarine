@@ -1,0 +1,16 @@
+.btn-dodaj-clana {
+    background: #c8102e;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-dodaj-clana:hover {
+    background: #a90d26;
+    transform: translateY(-1px);
+}
