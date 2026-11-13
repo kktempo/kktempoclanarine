@@ -1336,6 +1336,25 @@ document.addEventListener("keydown", function(event){
     }
 });
 
+function uppercaseInput(id){
+
+    const input = document.getElementById(id);
+
+    input.addEventListener("input", function(){
+
+        const position = this.selectionStart;
+
+        this.value = this.value.toLocaleUpperCase("sr");
+
+        this.setSelectionRange(position, position);
+
+    });
+}
+
+uppercaseInput("newMemberName");
+uppercaseInput("newMemberProgram");
+uppercaseInput("newMemberEmail");
+
 /* START */
 loadData();
 
