@@ -436,7 +436,7 @@ main{
 <div class="modal-overlay" id="newMemberModal">
     <div class="modal">
         <div class="modal-header">
-            <h2>Dodaj novog člana</h2>
+            <h2 id="newMemberModalTitle">Dodaj novog člana</h2>
             <button class="close" id="closeNewMember">×</button>
         </div>
 
@@ -508,19 +508,27 @@ main{
 
             <div id="detailsStatus" class="status-box"></div>
 
-            <div class="details-actions">
-                <button class="btn btn-pay" id="detailsPaymentButton">
-                    EVIDENTIRAJ UPLATU
-                </button>
+<div class="details-actions">
+    <button class="btn btn-pay" id="detailsPaymentButton">
+        EVIDENTIRAJ UPLATU
+    </button>
 
-                <button class="btn btn-pause" id="detailsPauseButton">
-                    PAUZA
-                </button>
+    <button class="btn btn-pause" id="detailsPauseButton">
+        PAUZA
+    </button>
 
-                <button class="btn btn-history" id="detailsHistoryButton">
-                    ISTORIJA
-                </button>
-            </div>
+    <button class="btn btn-history" id="detailsHistoryButton">
+        ISTORIJA
+    </button>
+
+    <button class="btn btn-save" id="editMemberButton">
+        IZMENI PODATKE
+    </button>
+
+    <button class="btn btn-danger" id="deleteMemberButton">
+        OBRIŠI ČLANA
+    </button>
+</div>
 
         </div>
     </div>
@@ -547,6 +555,7 @@ const STORAGE_KEY = "KK_TEMPO_CLANARINE_NOVA";
 let members = {};
 let detailsMemberId = null;
 let detailsMonth = null;
+let editingMemberId = null;
 
 const monthNames = [
     "Januar","Februar","Mart","April","Maj","Jun",
@@ -1203,6 +1212,12 @@ document.getElementById("historyModal")
         }
     });
 
+document.getElementById("editMemberButton")
+    .addEventListener("click", editMember);
+
+document.getElementById("deleteMemberButton")
+    .addEventListener("click", deleteMember);
+
 document.addEventListener("keydown", function(event){
     if(event.key === "Escape"){
         closeNewMemberModal();
@@ -1215,6 +1230,38 @@ document.addEventListener("keydown", function(event){
 loadData();
 generateMonths();
 renderTable();
+
+function deleteMember(){
+
+    const id = detailsMemberId;
+
+    if(!id || !members[id]) return;
+
+    const name = members[id].name;
+
+    const potvrda = confirm(
+        "Da li sigurno želiš da obrišeš člana: " +
+        name +
+        "?\n\nBiće obrisani i svi njegovi podaci i istorija uplata!"
+    );
+
+    if(!potvrda) return;
+
+    delete members[id];
+
+    saveData();
+
+    closeDetails();
+
+    closeHistory();
+
+    renderTable();
+
+    detailsMemberId = null;
+    detailsMonth = null;
+
+    alert("Član je uspešno obrisan.");
+}
 </script>
 
 </body>
