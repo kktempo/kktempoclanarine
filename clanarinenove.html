@@ -448,10 +448,10 @@ main{
                     <input id="newMemberName" type="text" placeholder="Npr. Marko Marković">
                 </div>
 
-                <div class="field">
-                    <label for="newMemberCode">Šifra člana *</label>
-                    <input id="newMemberCode" type="text" placeholder="Npr. 001">
-                </div>
+<div class="field">
+    <label for="newMemberCode">Šifra člana</label>
+    <input id="newMemberCode" type="text" readonly>
+</div>
 
                 <div class="field">
                     <label for="newMemberProgram">Grupa *</label>
@@ -863,12 +863,17 @@ function closeModal(id){
 }
 
 function openNewMemberModal(){
-editingMemberId = null;
 
-document.getElementById("newMemberModalTitle").textContent =
-    "Dodaj novog člana";
+    editingMemberId = null;
+
+    document.getElementById("newMemberModalTitle").textContent =
+        "Dodaj novog člana";
+
     document.getElementById("newMemberName").value = "";
-    document.getElementById("newMemberCode").value = "";
+
+    document.getElementById("newMemberCode").value =
+        getNextMemberCode();
+
     document.getElementById("newMemberProgram").value = "";
     document.getElementById("newMemberPrice").value = "";
     document.getElementById("newMemberEmail").value = "";
@@ -1194,6 +1199,21 @@ function showHistory(id){
     }).join("");
 
     openModal("historyModal");
+}
+
+function getNextMemberCode(){
+
+    const codes = Object.keys(members)
+        .map(code => parseInt(code, 10))
+        .filter(number => !isNaN(number));
+
+    if(codes.length === 0){
+        return "001";
+    }
+
+    const nextNumber = Math.max(...codes) + 1;
+
+    return String(nextNumber).padStart(3, "0");
 }
 
 function closeHistory(){
