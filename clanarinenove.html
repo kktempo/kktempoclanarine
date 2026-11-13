@@ -823,6 +823,10 @@ function closeModal(id){
 }
 
 function openNewMemberModal(){
+editingMemberId = null;
+
+document.getElementById("newMemberModalTitle").textContent =
+    "Dodaj novog člana";
     document.getElementById("newMemberName").value = "";
     document.getElementById("newMemberCode").value = "";
     document.getElementById("newMemberProgram").value = "";
@@ -840,61 +844,107 @@ function closeNewMemberModal(){
     closeModal("newMemberModal");
 }
 
+
+function editMember(){
+
+    const id = detailsMemberId;
+    const member = members[id];
+
+    if(!member) return;
+
+    editingMemberId = id;
+
+    document.getElementById("newMemberModalTitle").textContent =
+        "Izmeni podatke člana";
+
+    document.getElementById("newMemberName").value =
+        member.name || "";
+
+    document.getElementById("newMemberCode").value =
+        id;
+
+    document.getElementById("newMemberProgram").value =
+        member.program || "";
+
+    document.getElementById("newMemberPrice").value =
+        member.price || "";
+
+    document.getElementById("newMemberEmail").value =
+        member.email || "";
+
+    closeDetails();
+    openModal("newMemberModal");
+}
+
+
 function saveNewMember(){
 
-    const name =
-        document.getElementById("newMemberName").value.trim();
+    const name = document.getElementById("newMemberName").value.trim();
+    const id = document.getElementById("newMemberCode").value.trim();
+    const program = document.getElementById("newMemberProgram").value.trim();
+    const price = Number(document.getElementById("newMemberPrice").value);
+    const email = document.getElementById("newMemberEmail").value.trim();
 
-    const id =
-        document.getElementById("newMemberCode").value.trim();
-
-    const program =
-        document.getElementById("newMemberProgram").value.trim();
-
-    const price =
-        Number(document.getElementById("newMemberPrice").value);
-
-    const email =
-        document.getElementById("newMemberEmail").value.trim();
-
-    if(!name){
-        alert("Unesi ime i prezime člana.");
+    if(!name || !id || !program || !price || price <= 0){
+        alert("Popuni sva obavezna polja i unesi ispravnu cenu.");
         return;
     }
 
-    if(!id){
-        alert("Unesi šifru člana.");
+    const oldId = editingMemberId;
+
+    if(oldId === null && members[id]){
+        alert("Član sa ovom šifrom već postoji.");
         return;
     }
 
-    if(!program){
-        alert("Unesi grupu.");
+    if(oldId !== null && id !== oldId && members[id]){
+        alert("Drugi član već koristi ovu šifru.");
         return;
     }
 
-    if(!price || price <= 0){
-        alert("Unesi cenu članarine.");
-        return;
+    if(oldId !== null){
+
+        const oldMember = members[oldId];
+
+        members[id] = {
+            ...oldMember,
+            name,
+            program,
+            price,
+            email
+        };
+
+        if(id !== oldId){
+            delete members[oldId];
+        }
+
+        detailsMemberId = id;
+
+    }else{
+
+        members[id] = {
+            name,
+            program,
+            price,
+            email,
+            months:{}
+        };
     }
 
-    if(members[id]){
-        alert("Član sa šifrom " + id + " već postoji.");
-        return;
-    }
-
-    members[id] = {
-        name:name,
-        program:program,
-        price:price,
-        email:email,
-        months:{}
-    };
+    editingMemberId = null;
 
     saveData();
     closeNewMemberModal();
+
+    document.getElementById("newMemberModalTitle").textContent =
+        "Dodaj novog člana";
+
     renderTable();
 
-    alert("Član " + name + " je uspešno dodat.");
+    alert(oldId !== null
+        ? "Podaci člana su uspešno izmenjeni."
+        : "Član je uspešno dodat."
+    );
 }
 
 function openMemberDetails(id){
