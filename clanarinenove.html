@@ -644,6 +644,43 @@ function generateMonths(){
     select.value = current;
 }
 
+function addCurrentMonthToDebt(){
+
+    const now = new Date();
+
+    const currentMonth =
+        now.getFullYear() + "-" +
+        String(now.getMonth() + 1).padStart(2, "0");
+
+    let changed = false;
+
+    Object.values(members).forEach(member => {
+
+        if(!member.months){
+            member.months = {};
+        }
+
+        /*
+         * Ako za tekući mesec nema zapisa,
+         * automatski ga postavljamo kao neplaćen.
+         */
+        if(!member.months[currentMonth]){
+
+            member.months[currentMonth] = {
+                status: "unpaid",
+                automatic: true
+            };
+
+            changed = true;
+        }
+
+    });
+
+    if(changed){
+        saveData();
+    }
+}
+
 function getMonthStatus(member, month){
     if(!member.months) member.months = {};
 
@@ -1281,6 +1318,9 @@ document.addEventListener("keydown", function(event){
 
 /* START */
 loadData();
+
+addCurrentMonthToDebt();
+
 generateMonths();
 renderTable();
 
