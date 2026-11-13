@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KK Tempo — Članarine</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+    color:#111827;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+
+header{
+    background:#111827;
+    color:#fff;
+    padding:28px 20px;
+}
+.header-inner{
+    width:94%;
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+}
+header h1{font-size:28px}
+header p{margin-top:6px;color:#cbd5e1;font-size:14px}
+
+main{
+    width:94%;
+    max-width:1200px;
+    margin:25px auto 60px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+.stat{
+    background:#fff;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 5px 20px rgba(15,23,42,.06);
+}
+.stat-label{
+    font-size:12px;
+    font-weight:800;
+    color:#7b8491;
+    text-transform:uppercase;
+}
+.stat-value{
+    margin-top:8px;
+    font-size:27px;
+    font-weight:900;
+}
+
+.panel{
+    background:#fff;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 5px 20px rgba(15,23,42,.06);
+}
+.controls{
+    display:grid;
+    grid-template-columns:1fr 180px 180px auto;
+    gap:10px;
+    align-items:center;
+    margin-bottom:22px;
+}
+.search input,
+.month-select,
+.filter-select{
+    width:100%;
+    height:46px;
+    border:1px solid #d7dce3;
+    border-radius:10px;
+    padding:0 13px;
+    outline:none;
+    background:#fff;
+}
+.search input:focus,
+.month-select:focus,
+.filter-select:focus{
+    border-color:#c8102e;
+}
+
+.btn-dodaj-clana{
+    height:46px;
+    padding:0 18px;
+    background:#c8102e;
+    color:#fff;
+    border:0;
+    border-radius:10px;
+    font-weight:900;
+    white-space:nowrap;
+}
+.btn-dodaj-clana:hover{background:#a60d26}
+
+.table-title{
+    margin-bottom:12px;
+}
+.table-title h2{font-size:22px}
+.table-title p{color:#7b8491;font-size:13px;margin-top:4px}
+
+.table-wrapper{width:100%;overflow-x:auto}
+.members-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 8px;
+}
+.members-table th{
+    text-align:left;
+    padding:10px 16px;
+    font-size:12px;
+    color:#7b8491;
+    text-transform:uppercase;
+}
+.members-table td{
+    padding:15px 16px;
+    background:#f8fafc;
+}
+.members-table tbody tr.member-row{
+    cursor:pointer;
+    transition:.15s;
+}
+.members-table tbody tr.member-row:hover td{
+    background:#eef2f7;
+}
+.members-table td:first-child{border-radius:12px 0 0 12px}
+.members-table td:last-child{border-radius:0 12px 12px 0}
+
+.member{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.avatar{
+    width:44px;
+    height:44px;
+    min-width:44px;
+    border-radius:50%;
+    background:#c8102e;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+}
+.member-name{
+    font-size:16px;
+    font-weight:900;
+}
+.member-code{
+    margin-top:4px;
+    font-size:12px;
+    color:#8a93a0;
+}
+.member-program{
+    font-size:15px;
+    font-weight:800;
+    color:#374151;
+}
+
+.empty{
+    text-align:center;
+    padding:55px 15px;
+    color:#7b8491;
+}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.68);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:1000;
+}
+.modal-overlay.active{display:flex}
+
+.modal{
+    width:100%;
+    max-width:520px;
+    max-height:92vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 30px 80px rgba(0,0,0,.28);
+}
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 22px;
+    border-bottom:1px solid #e5e7eb;
+}
+.modal-header h2{font-size:20px}
+.close{
+    width:36px;
+    height:36px;
+    border:0;
+    border-radius:50%;
+    background:#f1f3f5;
+    font-size:22px;
+}
+.modal-body{padding:22px}
+
+.new-member-form{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+.field.full{grid-column:1/-1}
+.field label{
+    font-size:12px;
+    font-weight:900;
+    color:#374151;
+}
+.field input{
+    width:100%;
+    height:44px;
+    border:1px solid #d7dce3;
+    border-radius:9px;
+    padding:0 12px;
+    outline:none;
+}
+.field input:focus{border-color:#c8102e}
+.form-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:20px;
+}
+.btn{
+    min-height:46px;
+    border:0;
+    border-radius:10px;
+    font-weight:900;
+    padding:10px 12px;
+}
+.btn-cancel{background:#eef0f2;color:#374151}
+.btn-save,.btn-pay{background:#15803d;color:#fff}
+.btn-pause{background:#d89b00;color:#fff}
+.btn-history{background:#111827;color:#fff}
+.btn-danger{background:#c8102e;color:#fff}
+
+.details-top{
+    padding-bottom:18px;
+    border-bottom:1px solid #e5e7eb;
+    margin-bottom:18px;
+}
+.details-name{
+    font-size:24px;
+    font-weight:900;
+}
+.details-code{
+    margin-top:5px;
+    color:#8a93a0;
+    font-size:13px;
+}
+.details-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:16px;
+}
+.detail-card{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:15px;
+}
+.detail-label{
+    color:#8a93a0;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+}
+.detail-value{
+    margin-top:6px;
+    font-size:19px;
+    font-weight:900;
+}
+.debt{color:#c8102e}
+.status-box{
+    padding:13px 15px;
+    border-radius:10px;
+    margin-bottom:14px;
+    font-size:13px;
+    font-weight:900;
+}
+.status-paid{background:#dcfce7;color:#15803d}
+.status-unpaid{background:#fee2e2;color:#b91c1c}
+.status-pause{background:#fef3c7;color:#92400e}
+.details-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+.details-actions .btn-history{
+    grid-column:1/-1;
+}
+
+.history-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:13px 14px;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    margin-bottom:9px;
+}
+.history-month{font-weight:900}
+.history-status{font-size:11px;font-weight:900}
+.history-status.paid{color:#15803d}
+.history-status.pause{color:#a16207}
+.history-status.unpaid{color:#c8102e}
+
+@media(max-width:850px){
+    .controls{grid-template-columns:1fr 1fr}
+    .controls .search{grid-column:1/-1}
+    .btn-dodaj-clana{width:100%}
+}
+@media(max-width:600px){
+    header h1{font-size:23px}
+    main{width:96%}
+    .stats{grid-template-columns:1fr}
+    .panel{padding:14px}
+    .controls{grid-template-columns:1fr}
+    .controls .search{grid-column:auto}
+    .members-table th,
+    .members-table td{padding:11px 10px}
+    .avatar{width:38px;height:38px;min-width:38px}
+    .member-name{font-size:14px}
+    .member-program{font-size:13px}
+    .details-grid{grid-template-columns:1fr}
+    .details-actions{grid-template-columns:1fr}
+    .details-actions .btn-history{grid-column:auto}
+    .new-member-form{grid-template-columns:1fr}
+    .field.full{grid-column:auto}
+    .form-buttons{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <div>
+            <h1>KK TEMPO — ČLANARINE</h1>
+            <p>Pregled i evidencija članarina</p>
+        </div>
+    </div>
+</header>
+
+<main>
+
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-label">Ukupno članova</div>
+            <div class="stat-value" id="statMembers">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Naplaćeno ovog meseca</div>
+            <div class="stat-value" id="statPaid">0 KM</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Ukupan dug</div>
+            <div class="stat-value" id="statDebt">0 KM</div>
+        </div>
+    </section>
+
+    <section class="panel">
+
+        <div class="controls">
+
+            <div class="search">
+                <input id="search"
+                       type="text"
+                       placeholder="Pretraži člana po imenu ili šifri...">
+            </div>
+
+            <select id="monthSelect" class="month-select"></select>
+
+            <select id="filterSelect" class="filter-select">
+                <option value="all">Svi članovi</option>
+                <option value="paid">Plaćeno</option>
+                <option value="unpaid">Nije plaćeno</option>
+                <option value="pause">Pauza</option>
+            </select>
+
+            <button class="btn-dodaj-clana" id="addMemberButton">
+                ＋ DODAJ NOVOG ČLANA
+            </button>
+
+        </div>
+
+        <div class="table-title">
+            <h2>Spisak članova</h2>
+            <p>Klikni na člana da otvoriš detalje</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="members-table">
+                <thead>
+                    <tr>
+                        <th>IME I PREZIME</th>
+                        <th>GRUPA</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTable"></tbody>
+            </table>
+        </div>
+
+    </section>
+</main>
+
+<!-- NOVI ČLAN -->
+<div class="modal-overlay" id="newMemberModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Dodaj novog člana</h2>
+            <button class="close" id="closeNewMember">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="new-member-form">
+
+                <div class="field full">
+                    <label for="newMemberName">Ime i prezime *</label>
+                    <input id="newMemberName" type="text" placeholder="Npr. Marko Marković">
+                </div>
+
+                <div class="field">
+                    <label for="newMemberCode">Šifra člana *</label>
+                    <input id="newMemberCode" type="text" placeholder="Npr. 001">
+                </div>
+
+                <div class="field">
+                    <label for="newMemberProgram">Grupa *</label>
+                    <input id="newMemberProgram" type="text" placeholder="Npr. Juniori">
+                </div>
+
+                <div class="field">
+                    <label for="newMemberPrice">Cena članarine *</label>
+                    <input id="newMemberPrice" type="number" min="0" placeholder="Npr. 2500">
+                </div>
+
+                <div class="field">
+                    <label for="newMemberEmail">Email</label>
+                    <input id="newMemberEmail" type="email" placeholder="ime@email.com">
+                </div>
+
+            </div>
+
+            <div class="form-buttons">
+                <button class="btn btn-cancel" id="cancelNewMember">OTKAŽI</button>
+                <button class="btn btn-save" id="saveNewMember">SAČUVAJ ČLANA</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DETALJI ČLANA -->
+<div class="modal-overlay" id="memberDetailsModal">
+    <div class="modal">
+
+        <div class="modal-header">
+            <h2>Detalji člana</h2>
+            <button class="close" id="closeDetails">×</button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="details-top">
+                <div class="details-name" id="detailsName"></div>
+                <div class="details-code" id="detailsCode"></div>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-label">Cena članarine</div>
+                    <div class="detail-value" id="detailsPrice">0 KM</div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-label">Ukupan dug</div>
+                    <div class="detail-value debt" id="detailsDebt">0 KM</div>
+                </div>
+            </div>
+
+            <div id="detailsStatus" class="status-box"></div>
+
+            <div class="details-actions">
+                <button class="btn btn-pay" id="detailsPaymentButton">
+                    EVIDENTIRAJ UPLATU
+                </button>
+
+                <button class="btn btn-pause" id="detailsPauseButton">
+                    PAUZA
+                </button>
+
+                <button class="btn btn-history" id="detailsHistoryButton">
+                    ISTORIJA
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ISTORIJA -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal">
+
+        <div class="modal-header">
+            <h2 id="historyTitle">Istorija članarine</h2>
+            <button class="close" id="closeHistory">×</button>
+        </div>
+
+        <div class="modal-body" id="historyBody"></div>
+
+    </div>
+</div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "KK_TEMPO_CLANARINE_NOVA";
+let members = {};
+let detailsMemberId = null;
+let detailsMonth = null;
+
+const monthNames = [
+    "Januar","Februar","Mart","April","Maj","Jun",
+    "Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"
+];
+
+function loadData(){
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(!saved){
+        members = {};
+        return;
+    }
+
+    try{
+        members = JSON.parse(saved) || {};
+    }catch(error){
+        console.error("Greška pri učitavanju podataka:", error);
+        members = {};
+    }
+}
+
+function saveData(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+}
+
+function formatMoney(value){
+    const number = Number(value) || 0;
+    return number.toLocaleString("sr-Latn-RS") + " KM";
+}
+
+function getInitials(name){
+    const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+
+    if(parts.length === 0) return "?";
+    if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+
+    return (
+        parts[0].charAt(0) +
+        parts[parts.length - 1].charAt(0)
+    ).toUpperCase();
+}
+
+function escapeHTML(value){
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function generateMonths(){
+    const select = document.getElementById("monthSelect");
+    const oldValue = select.value;
+
+    select.innerHTML = "";
+
+    const today = new Date();
+
+    for(let i = -12; i <= 12; i++){
+
+        const date = new Date(
+            today.getFullYear(),
+            today.getMonth() + i,
+            1
+        );
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2,"0");
+        const value = year + "-" + month;
+
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent =
+            monthNames[date.getMonth()] + " " + year;
+
+        select.appendChild(option);
+    }
+
+    const current =
+        oldValue ||
+        today.getFullYear() + "-" +
+        String(today.getMonth()+1).padStart(2,"0");
+
+    select.value = current;
+}
+
+function getMonthStatus(member, month){
+    if(!member.months) member.months = {};
+
+    if(!member.months[month]){
+        return {status:"unpaid"};
+    }
+
+    return member.months[month];
+}
+
+function getTotalDebt(member){
+    const price = Number(member.price) || 0;
+    let debt = 0;
+
+    for(const month in (member.months || {})){
+        const record = member.months[month];
+
+        if(record && record.status === "unpaid"){
+            debt += price;
+        }
+    }
+
+    return debt;
+}
+
+function getStatusText(status){
+    if(status === "paid") return "PLAĆENO";
+    if(status === "pause") return "PAUZA";
+    return "NIJE PLAĆENO";
+}
+
+function getStatusClass(status){
+    if(status === "paid") return "status-paid";
+    if(status === "pause") return "status-pause";
+    return "status-unpaid";
+}
+
+function renderStats(){
+    const month = document.getElementById("monthSelect").value;
+
+    let paid = 0;
+    let debt = 0;
+
+    Object.values(members).forEach(member => {
+
+        debt += getTotalDebt(member);
+
+        const record = getMonthStatus(member, month);
+
+        if(record.status === "paid"){
+            paid += Number(member.price) || 0;
+        }
+    });
+
+    document.getElementById("statMembers").textContent =
+        Object.keys(members).length;
+
+    document.getElementById("statPaid").textContent =
+        formatMoney(paid);
+
+    document.getElementById("statDebt").textContent =
+        formatMoney(debt);
+}
+
+function getSortedMembers(){
+    const search =
+        document.getElementById("search").value
+        .trim()
+        .toLocaleLowerCase("sr");
+
+    const filter =
+        document.getElementById("filterSelect").value;
+
+    const month =
+        document.getElementById("monthSelect").value;
+
+    return Object.entries(members)
+        .filter(([id, member]) => {
+
+            const text =
+                (member.name || "") + " " +
+                id + " " +
+                (member.program || "");
+
+            const matchesSearch =
+                !search ||
+                text.toLocaleLowerCase("sr").includes(search);
+
+            const record =
+                getMonthStatus(member, month);
+
+            const matchesFilter =
+                filter === "all" ||
+                record.status === filter;
+
+            return matchesSearch && matchesFilter;
+        })
+        .sort((a,b) =>
+            String(a[1].name || "")
+                .localeCompare(
+                    String(b[1].name || ""),
+                    "sr",
+                    {sensitivity:"base"}
+                )
+        );
+}
+
+function renderTable(){
+    const table = document.getElementById("memberTable");
+    const list = getSortedMembers();
+
+    table.innerHTML = "";
+
+    if(list.length === 0){
+        table.innerHTML = `
+            <tr>
+                <td colspan="2">
+                    <div class="empty">
+                        <div class="empty-icon">👤</div>
+                        <div>Nema članova koji odgovaraju pretrazi.</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+        renderStats();
+        return;
+    }
+
+    list.forEach(([id, member]) => {
+
+        const row = document.createElement("tr");
+        row.className = "member-row";
+        row.dataset.memberId = id;
+
+        row.innerHTML = `
+            <td>
+                <div class="member">
+                    <div class="avatar">
+                        ${escapeHTML(getInitials(member.name))}
+                    </div>
+
+                    <div>
+                        <div class="member-name">
+                            ${escapeHTML(member.name || "-")}
+                        </div>
+
+                        <div class="member-code">
+                            Šifra: ${escapeHTML(id)}
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+            <td>
+                <div class="member-program">
+                    ${escapeHTML(member.program || "-")}
+                </div>
+            </td>
+        `;
+
+        row.addEventListener("click", function(){
+            openMemberDetails(id);
+        });
+
+        table.appendChild(row);
+    });
+
+    renderStats();
+}
+
+function openModal(id){
+    document.getElementById(id).classList.add("active");
+}
+
+function closeModal(id){
+    document.getElementById(id).classList.remove("active");
+}
+
+function openNewMemberModal(){
+    document.getElementById("newMemberName").value = "";
+    document.getElementById("newMemberCode").value = "";
+    document.getElementById("newMemberProgram").value = "";
+    document.getElementById("newMemberPrice").value = "";
+    document.getElementById("newMemberEmail").value = "";
+
+    openModal("newMemberModal");
+
+    setTimeout(() => {
+        document.getElementById("newMemberName").focus();
+    },50);
+}
+
+function closeNewMemberModal(){
+    closeModal("newMemberModal");
+}
+
+function saveNewMember(){
+
+    const name =
+        document.getElementById("newMemberName").value.trim();
+
+    const id =
+        document.getElementById("newMemberCode").value.trim();
+
+    const program =
+        document.getElementById("newMemberProgram").value.trim();
+
+    const price =
+        Number(document.getElementById("newMemberPrice").value);
+
+    const email =
+        document.getElementById("newMemberEmail").value.trim();
+
+    if(!name){
+        alert("Unesi ime i prezime člana.");
+        return;
+    }
+
+    if(!id){
+        alert("Unesi šifru člana.");
+        return;
+    }
+
+    if(!program){
+        alert("Unesi grupu.");
+        return;
+    }
+
+    if(!price || price <= 0){
+        alert("Unesi cenu članarine.");
+        return;
+    }
+
+    if(members[id]){
+        alert("Član sa šifrom " + id + " već postoji.");
+        return;
+    }
+
+    members[id] = {
+        name:name,
+        program:program,
+        price:price,
+        email:email,
+        months:{}
+    };
+
+    saveData();
+    closeNewMemberModal();
+    renderTable();
+
+    alert("Član " + name + " je uspešno dodat.");
+}
+
+function openMemberDetails(id){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    detailsMemberId = id;
+    detailsMonth =
+        document.getElementById("monthSelect").value;
+
+    document.getElementById("detailsName").textContent =
+        member.name || "-";
+
+    document.getElementById("detailsCode").textContent =
+        "Šifra: " + id +
+        (member.program ? " • " + member.program : "");
+
+    document.getElementById("detailsPrice").textContent =
+        formatMoney(member.price);
+
+    updateMemberDetails();
+
+    openModal("memberDetailsModal");
+}
+
+function updateMemberDetails(){
+
+    const member = members[detailsMemberId];
+
+    if(!member) return;
+
+    const record =
+        getMonthStatus(member, detailsMonth);
+
+    const debt =
+        getTotalDebt(member);
+
+    const debtElement =
+        document.getElementById("detailsDebt");
+
+    debtElement.textContent =
+        formatMoney(debt);
+
+    debtElement.style.color =
+        debt > 0 ? "#c8102e" : "#15803d";
+
+    const statusElement =
+        document.getElementById("detailsStatus");
+
+    statusElement.className =
+        "status-box " + getStatusClass(record.status);
+
+    statusElement.textContent =
+        getStatusText(record.status) +
+        " — " +
+        monthLabel(detailsMonth);
+
+    const paymentButton =
+        document.getElementById("detailsPaymentButton");
+
+    const pauseButton =
+        document.getElementById("detailsPauseButton");
+
+    if(record.status === "paid"){
+        paymentButton.textContent = "PONIŠTI UPLATU";
+    }else{
+        paymentButton.textContent = "EVIDENTIRAJ UPLATU";
+    }
+
+    if(record.status === "pause"){
+        pauseButton.textContent = "UKLONI PAUZU";
+    }else{
+        pauseButton.textContent = "PAUZA";
+    }
+}
+
+function monthLabel(value){
+    if(!value) return "";
+
+    const parts = value.split("-");
+
+    if(parts.length !== 2) return value;
+
+    const index = Number(parts[1]) - 1;
+
+    return (monthNames[index] || parts[1]) +
+        " " + parts[0];
+}
+
+function setPaid(id, month){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    if(!member.months) member.months = {};
+
+    member.months[month] = {
+        status:"paid",
+        date:new Date().toISOString()
+    };
+
+    saveData();
+    renderTable();
+    updateMemberDetails();
+}
+
+function setUnpaid(id, month){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    if(!member.months) member.months = {};
+
+    member.months[month] = {
+        status:"unpaid"
+    };
+
+    saveData();
+    renderTable();
+    updateMemberDetails();
+}
+
+function setPause(id, month){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    if(!member.months) member.months = {};
+
+    member.months[month] = {
+        status:"pause"
+    };
+
+    saveData();
+    renderTable();
+    updateMemberDetails();
+}
+
+function removePause(id, month){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    if(!member.months) member.months = {};
+
+    member.months[month] = {
+        status:"unpaid"
+    };
+
+    saveData();
+    renderTable();
+    updateMemberDetails();
+}
+
+function showHistory(id){
+
+    const member = members[id];
+
+    if(!member) return;
+
+    document.getElementById("historyTitle").textContent =
+        "Istorija — " + (member.name || "");
+
+    const body =
+        document.getElementById("historyBody");
+
+    const records = Object.entries(member.months || {})
+        .sort((a,b) => b[0].localeCompare(a[0]));
+
+    if(records.length === 0){
+
+        body.innerHTML = `
+            <div class="empty">
+                Nema evidentiranih promena za ovog člana.
+            </div>
+        `;
+
+        openModal("historyModal");
+        return;
+    }
+
+    body.innerHTML = records.map(([month, record]) => {
+
+        const status =
+            record && record.status
+                ? record.status
+                : "unpaid";
+
+        return `
+            <div class="history-row">
+                <div class="history-month">
+                    ${escapeHTML(monthLabel(month))}
+                </div>
+
+                <div class="history-status ${escapeHTML(status)}">
+                    ${escapeHTML(getStatusText(status))}
+                </div>
+            </div>
+        `;
+
+    }).join("");
+
+    openModal("historyModal");
+}
+
+function closeHistory(){
+    closeModal("historyModal");
+}
+
+function closeDetails(){
+    closeModal("memberDetailsModal");
+}
+
+document.getElementById("addMemberButton")
+    .addEventListener("click", openNewMemberModal);
+
+document.getElementById("closeNewMember")
+    .addEventListener("click", closeNewMemberModal);
+
+document.getElementById("cancelNewMember")
+    .addEventListener("click", closeNewMemberModal);
+
+document.getElementById("saveNewMember")
+    .addEventListener("click", saveNewMember);
+
+document.getElementById("closeDetails")
+    .addEventListener("click", closeDetails);
+
+document.getElementById("closeHistory")
+    .addEventListener("click", closeHistory);
+
+document.getElementById("detailsPaymentButton")
+    .addEventListener("click", function(){
+
+        if(!detailsMemberId || !detailsMonth) return;
+
+        const member = members[detailsMemberId];
+        const record = getMonthStatus(member, detailsMonth);
+
+        if(record.status === "paid"){
+            setUnpaid(detailsMemberId, detailsMonth);
+        }else{
+            setPaid(detailsMemberId, detailsMonth);
+        }
+    });
+
+document.getElementById("detailsPauseButton")
+    .addEventListener("click", function(){
+
+        if(!detailsMemberId || !detailsMonth) return;
+
+        const member = members[detailsMemberId];
+        const record = getMonthStatus(member, detailsMonth);
+
+        if(record.status === "pause"){
+            removePause(detailsMemberId, detailsMonth);
+        }else{
+            setPause(detailsMemberId, detailsMonth);
+        }
+    });
+
+document.getElementById("detailsHistoryButton")
+    .addEventListener("click", function(){
+        if(detailsMemberId){
+            showHistory(detailsMemberId);
+        }
+    });
+
+document.getElementById("search")
+    .addEventListener("input", renderTable);
+
+document.getElementById("filterSelect")
+    .addEventListener("change", renderTable);
+
+document.getElementById("monthSelect")
+    .addEventListener("change", function(){
+        if(detailsMemberId){
+            detailsMonth = this.value;
+        }
+
+        renderTable();
+
+        if(
+            document.getElementById("memberDetailsModal")
+                .classList.contains("active")
+        ){
+            updateMemberDetails();
+        }
+    });
+
+document.getElementById("newMemberModal")
+    .addEventListener("click", function(event){
+        if(event.target === this){
+            closeNewMemberModal();
+        }
+    });
+
+document.getElementById("memberDetailsModal")
+    .addEventListener("click", function(event){
+        if(event.target === this){
+            closeDetails();
+        }
+    });
+
+document.getElementById("historyModal")
+    .addEventListener("click", function(event){
+        if(event.target === this){
+            closeHistory();
+        }
+    });
+
+document.addEventListener("keydown", function(event){
+    if(event.key === "Escape"){
+        closeNewMemberModal();
+        closeDetails();
+        closeHistory();
+    }
+});
+
+/* START */
+loadData();
+generateMonths();
+renderTable();
+</script>
+
+</body>
+</html>
