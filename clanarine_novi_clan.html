@@ -1,0 +1,3091 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Članarine | KK Tempo</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:#f3f5f8;
+
+    color:#17202a;
+
+    min-height:100vh;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+
+    background:
+        linear-gradient(
+            135deg,
+            #111827,
+            #1f2937
+        );
+
+    color:white;
+
+    padding:28px 40px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.12);
+
+}
+
+.logo-area h1{
+
+    font-size:30px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+
+}
+
+.logo-area p{
+
+    margin-top:7px;
+
+    color:#aeb7c4;
+
+    font-size:14px;
+
+}
+
+.header-month{
+
+    text-align:right;
+
+}
+
+.header-month span{
+
+    display:block;
+
+    font-size:12px;
+
+    color:#9ca3af;
+
+    text-transform:uppercase;
+
+}
+
+.header-month strong{
+
+    display:block;
+
+    margin-top:4px;
+
+    font-size:20px;
+
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container{
+
+    width:94%;
+
+    max-width:1500px;
+
+    margin:30px auto 60px;
+
+}
+
+
+/* =========================================================
+   STATISTIKA
+========================================================= */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:18px;
+
+    margin-bottom:24px;
+
+}
+
+.stat-card{
+
+    background:white;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:16px;
+
+    padding:22px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,.05);
+
+}
+
+.stat-title{
+
+    color:#6b7280;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+
+}
+
+.stat-number{
+
+    margin-top:8px;
+
+    font-size:30px;
+
+    font-weight:800;
+
+}
+
+.stat-number.red{
+
+    color:#c8102e;
+
+}
+
+.stat-number.green{
+
+    color:#15803d;
+
+}
+
+
+/* =========================================================
+   GLAVNI PANEL
+========================================================= */
+
+.panel{
+
+    background:white;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:18px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.06);
+
+    overflow:hidden;
+
+}
+
+
+/* =========================================================
+   KONTROLE
+========================================================= */
+
+.controls{
+
+    padding:22px;
+
+    border-bottom:1px solid #e5e7eb;
+
+    display:flex;
+
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+}
+
+.search{
+
+    flex:1;
+
+    min-width:280px;
+
+}
+
+.search input{
+
+    width:100%;
+
+    padding:14px 17px;
+
+    border:
+        1px solid #d7dce3;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:14px;
+
+}
+
+.search input:focus{
+
+    border-color:#c8102e;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(200,16,46,.08);
+
+}
+
+.month-select{
+
+    padding:14px 16px;
+
+    border:
+        1px solid #d7dce3;
+
+    border-radius:10px;
+
+    background:white;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    min-width:190px;
+
+}
+
+.filter-select{
+
+    padding:14px 16px;
+
+    border:
+        1px solid #d7dce3;
+
+    border-radius:10px;
+
+    background:white;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+}
+
+
+/* =========================================================
+   TABELA HEADER
+========================================================= */
+
+.table-title{
+
+    padding:22px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+.table-title h2{
+
+    font-size:20px;
+
+}
+
+.table-title p{
+
+    color:#6b7280;
+
+    font-size:13px;
+
+    margin-top:5px;
+
+}
+
+
+/* =========================================================
+   TABELA
+========================================================= */
+
+.table-wrapper{
+
+    width:100%;
+
+    overflow-x:auto;
+
+}
+
+table{
+
+    width:100%;
+
+    min-width:1050px;
+
+    border-collapse:collapse;
+
+}
+
+thead{
+
+    background:#111827;
+
+    color:white;
+
+}
+
+th{
+
+    padding:15px;
+
+    text-align:left;
+
+    font-size:11px;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+
+    white-space:nowrap;
+
+}
+
+td{
+
+    padding:15px;
+
+    border-bottom:
+        1px solid #edf0f3;
+
+    font-size:14px;
+
+}
+
+tbody tr{
+
+    transition:.15s;
+
+}
+
+tbody tr:hover{
+
+    background:#fafafa;
+
+}
+
+
+/* =========================================================
+   ČLAN
+========================================================= */
+
+.member{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.avatar{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#111827;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-weight:800;
+
+    font-size:14px;
+
+}
+
+.member-name{
+
+    font-weight:700;
+
+}
+
+.member-code{
+
+    margin-top:3px;
+
+    font-size:11px;
+
+    color:#8a93a0;
+
+}
+
+
+/* =========================================================
+   PROGRAM
+========================================================= */
+
+.program{
+
+    color:#4b5563;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:7px 11px;
+
+    border-radius:20px;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    white-space:nowrap;
+
+}
+
+.status-paid{
+
+    background:#e8f7ee;
+
+    color:#15803d;
+
+}
+
+.status-unpaid{
+
+    background:#fdecef;
+
+    color:#c8102e;
+
+}
+
+.status-pause{
+
+    background:#fff5d8;
+
+    color:#986b00;
+
+}
+
+
+/* =========================================================
+   DUG
+========================================================= */
+
+.debt{
+
+    font-weight:800;
+
+}
+
+.debt-red{
+
+    color:#c8102e;
+
+}
+
+.debt-green{
+
+    color:#15803d;
+
+}
+
+
+/* =========================================================
+   DUGMAD
+========================================================= */
+
+.actions{
+
+    display:flex;
+
+    gap:7px;
+
+    flex-wrap:wrap;
+
+}
+
+.btn{
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:9px 12px;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    white-space:nowrap;
+
+}
+
+.btn:hover{
+
+    transform:translateY(-1px);
+
+}
+
+.btn-pay{
+
+    background:#15803d;
+
+    color:white;
+
+}
+
+.btn-pay:hover{
+
+    background:#116b32;
+
+}
+
+.btn-undo{
+
+    background:#c8102e;
+
+    color:white;
+
+}
+
+.btn-undo:hover{
+
+    background:#a60d26;
+
+}
+
+.btn-pause{
+
+    background:#f2b91e;
+
+    color:#171717;
+
+}
+
+.btn-pause:hover{
+
+    background:#dca916;
+
+}
+
+.btn-history{
+
+    background:#eef1f5;
+
+    color:#374151;
+
+}
+
+.btn-history:hover{
+
+    background:#e2e6ec;
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+        rgba(15,23,42,.65);
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    z-index:1000;
+
+}
+
+.modal-overlay.active{
+
+    display:flex;
+
+}
+
+.modal{
+
+    background:white;
+
+    width:100%;
+
+    max-width:600px;
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    border-radius:18px;
+
+    box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.25);
+
+}
+
+.modal-header{
+
+    padding:22px;
+
+    border-bottom:1px solid #e5e7eb;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.modal-header h2{
+
+    font-size:20px;
+
+}
+
+.close{
+
+    border:none;
+
+    background:#f1f3f5;
+
+    width:35px;
+
+    height:35px;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    font-size:20px;
+
+}
+
+.modal-body{
+
+    padding:22px;
+
+}
+
+.history-row{
+
+    padding:15px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius:10px;
+
+    margin-bottom:10px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.history-month{
+
+    font-weight:700;
+
+}
+
+.history-status{
+
+    font-size:11px;
+
+    font-weight:800;
+
+}
+
+.history-status.paid{
+
+    color:#15803d;
+
+}
+
+.history-status.pause{
+
+    color:#986b00;
+
+}
+
+.history-status.unpaid{
+
+    color:#c8102e;
+
+}
+
+
+/* =========================================================
+   PRAZNO
+========================================================= */
+
+.empty{
+
+    text-align:center;
+
+    padding:60px 20px;
+
+    color:#7b8491;
+
+}
+
+.empty-icon{
+
+    font-size:42px;
+
+    margin-bottom:10px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1000px){
+
+    .stats{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+
+/* =========================================================
+   DODAJ NOVOG ČLANA
+========================================================= */
+
+.btn-dodaj-clana{
+    background:#c8102e;
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:14px 18px;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:.15s;
+}
+
+.btn-dodaj-clana:hover{
+    background:#a60d26;
+    transform:translateY(-1px);
+}
+
+/* FORMA NOVOG ČLANA */
+
+.new-member-form{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.new-member-field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.new-member-field.full{
+    grid-column:1 / -1;
+}
+
+.new-member-field label{
+    font-size:12px;
+    font-weight:800;
+    color:#374151;
+}
+
+.new-member-field input{
+    width:100%;
+    padding:12px 13px;
+    border:1px solid #d7dce3;
+    border-radius:9px;
+    outline:none;
+    font-size:14px;
+}
+
+.new-member-field input:focus{
+    border-color:#c8102e;
+    box-shadow:0 0 0 3px rgba(200,16,46,.08);
+}
+
+.new-member-buttons{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:22px;
+}
+
+.new-member-cancel,
+.new-member-save{
+    border:none;
+    border-radius:9px;
+    padding:11px 18px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.new-member-cancel{
+    background:#eef1f5;
+    color:#374151;
+}
+
+.new-member-save{
+    background:#c8102e;
+    color:white;
+}
+
+.new-member-save:hover{
+    background:#a60d26;
+}
+
+@media(max-width:650px){
+    .new-member-form{
+        grid-template-columns:1fr;
+    }
+
+    .new-member-field.full{
+        grid-column:auto;
+    }
+}
+
+@media(max-width:650px){
+
+    .header{
+
+        padding:22px;
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .header-month{
+
+        text-align:left;
+
+    }
+
+    .stats{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .container{
+
+        width:96%;
+
+    }
+
+    .controls{
+
+        padding:15px;
+
+    }
+
+    .search{
+
+        min-width:100%;
+
+    }
+
+    .month-select,
+    .filter-select{
+
+        width:100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+    .header{
+
+        background:white;
+
+        color:black;
+
+    }
+
+    .controls,
+    .actions{
+
+        display:none;
+
+    }
+
+    .panel{
+
+        box-shadow:none;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+    <div class="logo-area">
+
+        <h1>ČLANARINE</h1>
+
+        <p>
+            Evidencija uplata i pauza članova
+        </p>
+
+    </div>
+
+    <div class="header-month">
+
+        <span>
+            Izabrani mesec
+        </span>
+
+        <strong id="headerMonth">
+            -
+        </strong>
+
+    </div>
+
+</header>
+
+
+
+<main class="container">
+
+
+<!-- =====================================================
+     STATISTIKA
+===================================================== -->
+
+<section class="stats">
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Ukupno članova
+        </div>
+
+        <div
+            class="stat-number"
+            id="totalMembers">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Plaćeno za mesec
+        </div>
+
+        <div
+            class="stat-number green"
+            id="monthPaid">
+
+            0 KM
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Dug za mesec
+        </div>
+
+        <div
+            class="stat-number red"
+            id="monthDebt">
+
+            0 KM
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Pauza za mesec
+        </div>
+
+        <div
+            class="stat-number"
+            id="monthPause">
+
+            0
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     GLAVNI PANEL
+===================================================== -->
+
+<section class="panel">
+
+
+    <!-- KONTROLE -->
+
+    <div class="controls">
+
+
+        <div class="search">
+
+            <input
+                id="search"
+                type="text"
+                placeholder="Pretraži člana po imenu ili šifri..."
+                oninput="renderTable()">
+
+        </div>
+
+
+        <select
+            id="monthSelect"
+            class="month-select"
+            onchange="renderTable()">
+        </select>
+
+
+        <select
+            id="filterSelect"
+            class="filter-select"
+            onchange="renderTable()">
+
+            <option value="all">
+                Svi članovi
+            </option>
+
+            <option value="paid">
+                Plaćeno
+            </option>
+
+            <option value="unpaid">
+                Nije plaćeno
+            </option>
+
+            <option value="pause">
+                Pauza
+            </option>
+
+        </select>
+
+        <button class="btn-dodaj-clana" onclick="openNewMemberModal()">
+            ＋ DODAJ NOVOG ČLANA
+        </button>
+
+    </div>
+
+    <!-- NASLOV TABELE -->
+
+    <div class="table-title">
+
+        <div>
+
+            <h2>
+                Spisak članova
+            </h2>
+
+            <p>
+               
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABELA -->
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Član
+                    </th>
+
+                    <th>
+                        Program / grupa
+                    </th>
+
+                    <th>
+                        Cena
+                    </th>
+
+                    <th>
+                        Status za izabrani mesec
+                    </th>
+
+                    <th>
+                        Ukupan dug
+                    </th>
+
+                    <th>
+                        Akcije
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="memberTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     NOVI ČLAN
+===================================================== -->
+
+<div class="modal-overlay" id="newMemberModal">
+
+    <div class="modal">
+
+        <div class="modal-header">
+
+            <h2>Dodaj novog člana</h2>
+
+            <button
+                class="close"
+                onclick="closeNewMemberModal()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-body">
+
+            <div class="new-member-form">
+
+                <div class="new-member-field full">
+                    <label for="newMemberName">
+                        Ime i prezime *
+                    </label>
+
+                    <input
+                        id="newMemberName"
+                        type="text"
+                        placeholder="Npr. Marko Marković"
+                    >
+                </div>
+
+                <div class="new-member-field">
+                    <label for="newMemberCode">
+                        Šifra člana *
+                    </label>
+
+                    <input
+                        id="newMemberCode"
+                        type="text"
+                        placeholder="Npr. 001"
+                    >
+                </div>
+
+                <div class="new-member-field">
+                    <label for="newMemberProgram">
+                        Program / grupa *
+                    </label>
+
+                    <input
+                        id="newMemberProgram"
+                        type="text"
+                        placeholder="Npr. Juniori"
+                    >
+                </div>
+
+                <div class="new-member-field">
+                    <label for="newMemberPrice">
+                        Cena članarine *
+                    </label>
+
+                    <input
+                        id="newMemberPrice"
+                        type="number"
+                        min="0"
+                        placeholder="Npr. 2500"
+                    >
+                </div>
+
+                <div class="new-member-field">
+                    <label for="newMemberEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="newMemberEmail"
+                        type="email"
+                        placeholder="ime@email.com"
+                    >
+                </div>
+
+            </div>
+
+            <div class="new-member-buttons">
+
+                <button
+                    class="new-member-cancel"
+                    onclick="closeNewMemberModal()">
+                    OTKAŽI
+                </button>
+
+                <button
+                    class="new-member-save"
+                    onclick="saveNewMember()">
+                    SAČUVAJ ČLANA
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ISTORIJA ČLANA
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="historyModal">
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <h2 id="historyTitle">
+                Istorija članarine
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeHistory()">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="historyBody">
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   NOVA, SAMOSTALNA BAZA
+========================================================= */
+
+const STORAGE_KEY =
+    "KK_TEMPO_CLANARINE_NOVA";
+
+
+let members = {};
+
+
+/* =========================================================
+   NAZIVI MESECI
+========================================================= */
+
+const monthNames = [
+
+    "Januar",
+    "Februar",
+    "Mart",
+    "April",
+    "Maj",
+    "Jun",
+    "Jul",
+    "Avgust",
+    "Septembar",
+    "Oktobar",
+    "Novembar",
+    "Decembar"
+
+];
+
+
+/* =========================================================
+   UČITAVANJE
+========================================================= */
+
+function loadData(){
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if(saved){
+
+        try{
+
+            members =
+                JSON.parse(saved) || {};
+
+        }catch(e){
+
+            members = {};
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   ČUVANJE
+========================================================= */
+
+function saveData(){
+
+    localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(
+            members
+        )
+
+    );
+
+}
+
+
+/* =========================================================
+   GENERISANJE MESECI
+========================================================= */
+
+function generateMonths(){
+
+    const select =
+        document.getElementById(
+            "monthSelect"
+        );
+
+
+    select.innerHTML = "";
+
+
+    const today =
+        new Date();
+
+
+    /*
+       Prikazujemo 12 meseci unazad
+       i 12 meseci unapred.
+    */
+
+    for(
+        let i = -12;
+        i <= 12;
+        i++
+    ){
+
+        const d =
+            new Date(
+
+                today.getFullYear(),
+                today.getMonth() + i,
+                1
+
+            );
+
+
+        const year =
+            d.getFullYear();
+
+
+        const month =
+            String(
+                d.getMonth()+1
+            ).padStart(2,"0");
+
+
+        const value =
+            year + "-" + month;
+
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            value;
+
+
+        option.textContent =
+            monthNames[
+                d.getMonth()
+            ] +
+            " " +
+            year;
+
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+
+    const current =
+        getCurrentMonth();
+
+
+    select.value =
+        current;
+
+
+    updateHeaderMonth();
+
+}
+
+
+/* =========================================================
+   TRENUTNI MESEC
+========================================================= */
+
+function getCurrentMonth(){
+
+    const d =
+        new Date();
+
+
+    return (
+
+        d.getFullYear() +
+        "-" +
+        String(
+            d.getMonth()+1
+        ).padStart(2,"0")
+
+    );
+
+}
+
+
+/* =========================================================
+   LEP NAZIV MESECA
+========================================================= */
+
+function formatMonth(value){
+
+    if(!value){
+        return "-";
+    }
+
+
+    const parts =
+        value.split("-");
+
+
+    const year =
+        Number(parts[0]);
+
+
+    const month =
+        Number(parts[1]) - 1;
+
+
+    return (
+        monthNames[month] +
+        " " +
+        year
+    );
+
+}
+
+
+/* =========================================================
+   HEADER MESEC
+========================================================= */
+
+function updateHeaderMonth(){
+
+    const value =
+        document.getElementById(
+            "monthSelect"
+        ).value;
+
+
+    document.getElementById(
+        "headerMonth"
+    ).textContent =
+        formatMonth(value);
+
+}
+
+
+/* =========================================================
+   SRPSKO SORTIRANJE
+========================================================= */
+
+function getSortedMembers(){
+
+    return Object.keys(
+        members
+    ).sort(
+
+        function(a,b){
+
+            const nameA =
+                (
+                    members[a].name ||
+                    ""
+                ).trim();
+
+
+            const nameB =
+                (
+                    members[b].name ||
+                    ""
+                ).trim();
+
+
+            return nameA.localeCompare(
+
+                nameB,
+
+                "sr",
+
+                {
+                    sensitivity:
+                        "base"
+                }
+
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   STATUS ZA MESEC
+========================================================= */
+
+function getMonthStatus(
+    member,
+    month
+){
+
+    if(
+        !member.months
+    ){
+
+        return {
+            status:"unpaid",
+            amount:
+                Number(
+                    member.price
+                ) || 0
+        };
+
+    }
+
+
+    if(
+        !member.months[month]
+    ){
+
+        return {
+            status:"unpaid",
+            amount:
+                Number(
+                    member.price
+                ) || 0
+        };
+
+    }
+
+
+    return member.months[
+        month
+    ];
+
+}
+
+
+/* =========================================================
+   UKUPAN DUG
+========================================================= */
+
+function getTotalDebt(member){
+
+    let debt = 0;
+
+
+    if(!member.months){
+
+        return 0;
+
+    }
+
+
+    Object.keys(
+        member.months
+    ).forEach(
+
+        function(month){
+
+            const record =
+                member.months[
+                    month
+                ];
+
+
+            if(
+                record.status ===
+                "unpaid"
+            ){
+
+                debt +=
+                    Number(
+                        record.amount
+                    ) ||
+                    Number(
+                        member.price
+                    ) ||
+                    0;
+
+            }
+
+        }
+
+    );
+
+
+    return debt;
+
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+function getInitials(name){
+
+    if(!name){
+
+        return "?";
+
+    }
+
+
+    const parts =
+        name.trim().split(
+            /\s+/
+        );
+
+
+    if(parts.length === 1){
+
+        return parts[0]
+            .charAt(0)
+            .toUpperCase();
+
+    }
+
+
+    return (
+
+        parts[0].charAt(0) +
+        parts[
+            parts.length - 1
+        ].charAt(0)
+
+    ).toUpperCase();
+
+}
+
+
+/* =========================================================
+   STATUS HTML
+========================================================= */
+
+function statusHTML(record){
+
+    if(
+        record.status ===
+        "paid"
+    ){
+
+        return `
+
+            <span
+                class="status status-paid">
+
+                ● PLAĆENO
+
+            </span>
+
+        `;
+
+    }
+
+
+    if(
+        record.status ===
+        "pause"
+    ){
+
+        return `
+
+            <span
+                class="status status-pause">
+
+                ● PAUZA
+
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span
+            class="status status-unpaid">
+
+            ● NIJE PLAĆENO
+
+        </span>
+
+    `;
+
+}
+
+
+/* =========================================================
+   TABELA
+========================================================= */
+
+function renderTable(){
+
+    updateHeaderMonth();
+
+
+    const table =
+        document.getElementById(
+            "memberTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    const month =
+        document.getElementById(
+            "monthSelect"
+        ).value;
+
+
+    const search =
+        document.getElementById(
+            "search"
+        ).value
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        document.getElementById(
+            "filterSelect"
+        ).value;
+
+
+    const sorted =
+        getSortedMembers();
+
+
+    let monthPaid = 0;
+
+    let monthDebt = 0;
+
+    let monthPause = 0;
+
+    let visible = 0;
+
+
+    sorted.forEach(
+
+        function(id){
+
+            const member =
+                members[id];
+
+
+            const record =
+                getMonthStatus(
+                    member,
+                    month
+                );
+
+
+            /*
+               PRETRAGA
+            */
+
+            const text = (
+
+                (member.name || "") +
+                " " +
+                id +
+                " " +
+                (member.program || "")
+
+            ).toLowerCase();
+
+
+            if(
+                search &&
+                !text.includes(
+                    search
+                )
+            ){
+
+                return;
+
+            }
+
+
+            /*
+               FILTER
+            */
+
+            if(
+                filter !== "all" &&
+                record.status !==
+                filter
+            ){
+
+                return;
+
+            }
+
+
+            visible++;
+
+
+            /*
+               STATISTIKA
+            */
+
+            if(
+                record.status ===
+                "paid"
+            ){
+
+                monthPaid +=
+                    Number(
+                        record.amount
+                    ) ||
+                    Number(
+                        member.price
+                    ) ||
+                    0;
+
+            }
+
+
+            if(
+                record.status ===
+                "unpaid"
+            ){
+
+                monthDebt +=
+                    Number(
+                        record.amount
+                    ) ||
+                    Number(
+                        member.price
+                    ) ||
+                    0;
+
+            }
+
+
+            if(
+                record.status ===
+                "pause"
+            ){
+
+                monthPause++;
+
+            }
+
+
+            const totalDebt =
+                getTotalDebt(
+                    member
+                );
+
+
+            const debtHTML =
+
+                totalDebt > 0
+
+                ?
+
+                `
+
+                <span
+                    class="debt debt-red">
+
+                    ${formatMoney(
+                        totalDebt
+                    )}
+
+                </span>
+
+                `
+
+                :
+
+                `
+
+                <span
+                    class="debt debt-green">
+
+                    0 KM
+
+                </span>
+
+                `;
+
+
+            let actionButtons = "";
+
+
+            if(
+                record.status ===
+                "paid"
+            ){
+
+                actionButtons += `
+
+                    <button
+                        class="btn btn-undo"
+                        onclick="
+                            setUnpaid(
+                                '${escapeValue(id)}',
+                                '${month}'
+                            )
+                        ">
+
+                        PONIŠTI UPLATU
+
+                    </button>
+
+                `;
+
+            }
+
+            else if(
+                record.status ===
+                "pause"
+            ){
+
+                actionButtons += `
+
+                    <button
+                        class="btn btn-pay"
+                        onclick="
+                            setPaid(
+                                '${escapeValue(id)}',
+                                '${month}'
+                            )
+                        ">
+
+                        EVIDENTIRAJ UPLATU
+
+                    </button>
+
+                `;
+
+            }
+
+            else{
+
+                actionButtons += `
+
+                    <button
+                        class="btn btn-pay"
+                        onclick="
+                            setPaid(
+                                '${escapeValue(id)}',
+                                '${month}'
+                            )
+                        ">
+
+                        EVIDENTIRAJ UPLATU
+
+                    </button>
+
+                `;
+
+            }
+
+
+            if(
+                record.status ===
+                "pause"
+            ){
+
+                actionButtons += `
+
+                    <button
+                        class="btn btn-pause"
+                        onclick="
+                            removePause(
+                                '${escapeValue(id)}',
+                                '${month}'
+                            )
+                        ">
+
+                        UKLONI PAUZU
+
+                    </button>
+
+                `;
+
+            }
+
+            else{
+
+                actionButtons += `
+
+                    <button
+                        class="btn btn-pause"
+                        onclick="
+                            setPause(
+                                '${escapeValue(id)}',
+                                '${month}'
+                            )
+                        ">
+
+                        PAUZA
+
+                    </button>
+
+                `;
+
+            }
+
+
+            actionButtons += `
+
+                <button
+                    class="btn btn-history"
+                    onclick="
+                        showHistory(
+                            '${escapeValue(id)}'
+                        )
+                    ">
+
+                    ISTORIJA
+
+                </button>
+
+            `;
+
+
+            table.innerHTML += `
+
+                <tr>
+
+                    <td>
+
+                        <div class="member">
+
+                            <div class="avatar">
+
+                                ${getInitials(
+                                    member.name
+                                )}
+
+                            </div>
+
+                            <div>
+
+                                <div
+                                    class="member-name">
+
+                                    ${escapeHTML(
+                                        member.name ||
+                                        "-"
+                                    )}
+
+                                </div>
+
+                                <div
+                                    class="member-code">
+
+                                    Šifra:
+                                    ${escapeHTML(
+                                        id
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="program">
+
+                            ${escapeHTML(
+                                member.program ||
+                                "-"
+                            )}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+
+                            ${formatMoney(
+                                member.price
+                            )}
+
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        ${statusHTML(
+                            record
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${debtHTML}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            ${actionButtons}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    );
+
+
+    if(
+        visible === 0
+    ){
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="empty">
+
+                    <div
+                        class="empty-icon">
+
+                        👥
+
+                    </div>
+
+                    <strong>
+                        Nema članova za prikaz
+                    </strong>
+
+                    <p>
+                        Promeni pretragu,
+                        mesec ili filter.
+                    </p>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    document.getElementById(
+        "totalMembers"
+    ).textContent =
+        Object.keys(
+            members
+        ).length;
+
+
+    document.getElementById(
+        "monthPaid"
+    ).textContent =
+        formatMoney(
+            monthPaid
+        );
+
+
+    document.getElementById(
+        "monthDebt"
+    ).textContent =
+        formatMoney(
+            monthDebt
+        );
+
+
+    document.getElementById(
+        "monthPause"
+    ).textContent =
+        monthPause;
+
+}
+
+
+/* =========================================================
+   EVIDENTIRAJ UPLATU
+========================================================= */
+
+function setPaid(
+    id,
+    month
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        return;
+
+    }
+
+
+    if(!member.months){
+
+        member.months = {};
+
+    }
+
+
+    member.months[month] = {
+
+        status:"paid",
+
+        amount:
+            Number(
+                member.price
+            ) || 0,
+
+        paymentDate:
+            new Date()
+                .toISOString()
+
+    };
+
+
+    saveData();
+
+
+    renderTable();
+
+}
+
+
+/* =========================================================
+   PONIŠTI UPLATU
+========================================================= */
+
+function setUnpaid(
+    id,
+    month
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            "Da li želiš da poništiš uplatu za " +
+            formatMonth(month) +
+            "?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    if(!member.months){
+
+        member.months = {};
+
+    }
+
+
+    member.months[month] = {
+
+        status:"unpaid",
+
+        amount:
+            Number(
+                member.price
+            ) || 0
+
+    };
+
+
+    saveData();
+
+
+    renderTable();
+
+}
+
+
+/* =========================================================
+   PAUZA
+========================================================= */
+
+function setPause(
+    id,
+    month
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        return;
+
+    }
+
+
+    if(!member.months){
+
+        member.months = {};
+
+    }
+
+
+    if(
+        !confirm(
+            "Postaviti pauzu za " +
+            formatMonth(month) +
+            "?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    member.months[month] = {
+
+        status:"pause",
+
+        amount:0
+
+    };
+
+
+    saveData();
+
+
+    renderTable();
+
+}
+
+
+/* =========================================================
+   UKLONI PAUZU
+========================================================= */
+
+function removePause(
+    id,
+    month
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        return;
+
+    }
+
+
+    member.months[month] = {
+
+        status:"unpaid",
+
+        amount:
+            Number(
+                member.price
+            ) || 0
+
+    };
+
+
+    saveData();
+
+
+    renderTable();
+
+}
+
+
+/* =========================================================
+   ISTORIJA
+========================================================= */
+
+function showHistory(id){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "historyTitle"
+    ).textContent =
+
+        "Istorija — " +
+        member.name;
+
+
+    const body =
+        document.getElementById(
+            "historyBody"
+        );
+
+
+    body.innerHTML = "";
+
+
+    const months =
+        member.months
+        ?
+        Object.keys(
+            member.months
+        ).sort().reverse()
+        :
+        [];
+
+
+    if(
+        months.length === 0
+    ){
+
+        body.innerHTML = `
+
+            <div class="empty">
+
+                Nema evidentiranih
+                uplata ili pauza.
+
+            </div>
+
+        `;
+
+    }
+
+    else{
+
+        months.forEach(
+
+            function(month){
+
+                const record =
+                    member.months[
+                        month
+                    ];
+
+
+                let statusText =
+                    "NIJE PLAĆENO";
+
+
+                let className =
+                    "unpaid";
+
+
+                if(
+                    record.status ===
+                    "paid"
+                ){
+
+                    statusText =
+                        "PLAĆENO";
+
+                    className =
+                        "paid";
+
+                }
+
+
+                if(
+                    record.status ===
+                    "pause"
+                ){
+
+                    statusText =
+                        "PAUZA";
+
+                    className =
+                        "pause";
+
+                }
+
+
+                body.innerHTML += `
+
+                    <div
+                        class="history-row">
+
+                        <div>
+
+                            <div
+                                class="history-month">
+
+                                ${formatMonth(
+                                    month
+                                )}
+
+                            </div>
+
+                            <div
+                                style="
+                                    margin-top:4px;
+                                    color:#6b7280;
+                                    font-size:12px;
+                                ">
+
+                                ${
+
+                                    record.status ===
+                                    "paid"
+
+                                    ?
+
+                                    formatMoney(
+                                        record.amount
+                                    )
+
+                                    :
+
+                                    "Članarina: " +
+                                    formatMoney(
+                                        member.price
+                                    )
+
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                history-status
+                                ${className}
+                            ">
+
+                            ${statusText}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+        );
+
+    }
+
+
+    document.getElementById(
+        "historyModal"
+    ).classList.add(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   ZATVORI ISTORIJU
+========================================================= */
+
+function closeHistory(){
+
+    document.getElementById(
+        "historyModal"
+    ).classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   FORMAT NOVCA
+========================================================= */
+
+function formatMoney(value){
+
+    return (
+
+        Number(value) || 0
+
+    ).toLocaleString(
+        "sr-RS"
+    ) + " KM";
+
+}
+
+
+/* =========================================================
+   ZAŠTITA HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================================
+   ZA ONCLICK
+========================================================= */
+
+function escapeValue(value){
+
+    return String(value)
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+loadData();
+
+generateMonths();
+
+renderTable();
+
+
+/* =========================================================
+   ZATVARANJE MODALA KLIKOM VAN
+========================================================= */
+
+document.getElementById(
+    "historyModal"
+).addEventListener(
+
+    "click",
+
+    function(e){
+
+        if(
+            e.target ===
+            this
+        ){
+
+            closeHistory();
+
+        }
+
+    }
+
+);
+
+function openNewMemberModal(){
+
+    document
+        .getElementById("newMemberModal")
+        .classList.add("active");
+
+    document
+        .getElementById("newMemberName")
+        .focus();
+}
+
+
+function closeNewMemberModal(){
+
+    document
+        .getElementById("newMemberModal")
+        .classList.remove("active");
+
+    document.getElementById("newMemberName").value = "";
+    document.getElementById("newMemberCode").value = "";
+    document.getElementById("newMemberProgram").value = "";
+    document.getElementById("newMemberPrice").value = "";
+    document.getElementById("newMemberEmail").value = "";
+}
+
+
+function saveNewMember(){
+
+    const name =
+        document
+            .getElementById("newMemberName")
+            .value
+            .trim();
+
+    const id =
+        document
+            .getElementById("newMemberCode")
+            .value
+            .trim();
+
+    const program =
+        document
+            .getElementById("newMemberProgram")
+            .value
+            .trim();
+
+    const price =
+        Number(
+            document
+                .getElementById("newMemberPrice")
+                .value
+        ) || 0;
+
+    const email =
+        document
+            .getElementById("newMemberEmail")
+            .value
+            .trim();
+
+
+    if(!name){
+        alert("Unesi ime i prezime člana.");
+        return;
+    }
+
+    if(!id){
+        alert("Unesi šifru člana.");
+        return;
+    }
+
+    if(!program){
+        alert("Unesi program / grupu.");
+        return;
+    }
+
+    if(price <= 0){
+        alert("Unesi cenu članarine.");
+        return;
+    }
+
+
+    if(members[id]){
+
+        alert(
+            "Član sa šifrom " +
+            id +
+            " već postoji."
+        );
+
+        return;
+    }
+
+
+    members[id] = {
+
+        name:name,
+
+        program:program,
+
+        price:price,
+
+        email:email,
+
+        months:{}
+
+    };
+
+
+    saveData();
+
+    closeNewMemberModal();
+
+    renderTable();
+
+    alert(
+        "Član " +
+        name +
+        " je uspešno dodat."
+    );
+}
+
+
+document
+    .getElementById("newMemberModal")
+    .addEventListener(
+        "click",
+        function(e){
+
+            if(e.target === this){
+
+                closeNewMemberModal();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+</html>
