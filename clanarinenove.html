@@ -6,6 +6,35 @@
 <title>KK Tempo — Članarine</title>
 
 <style>
+.status-krug {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    animation: treperi 1.2s infinite;
+}
+
+.status-placeno {
+    background: #16c934;
+    box-shadow: 0 0 8px #16c934;
+}
+
+.status-neplaceno {
+    background: #e60000;
+    box-shadow: 0 0 8px #e60000;
+}
+
+@keyframes treperi {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+}
 *{box-sizing:border-box;margin:0;padding:0}
 body{
     font-family:Arial,Helvetica,sans-serif;
@@ -819,23 +848,32 @@ function renderTable(){
         row.dataset.memberId = id;
 
         row.innerHTML = `
-            <td>
-                <div class="member">
-                    <div class="avatar">
-                        ${escapeHTML(getInitials(member.name))}
-                    </div>
+           <td>
+    <div class="member">
+        <div class="avatar">
+            ${escapeHTML(getInitials(member.name))}
+        </div>
 
-                    <div>
-                        <div class="member-name">
-                            ${escapeHTML(member.name || "-")}
-                        </div>
+        <div>
+<div class="member-name">
+    <span class="status-krug ${
+        getMonthStatus(
+            member,
+            document.getElementById("monthSelect").value
+        ).status === "paid"
+            ? "status-placeno"
+            : "status-neplaceno"
+    }"></span>
 
-                        <div class="member-code">
-                            Šifra: ${escapeHTML(id)}
-                        </div>
-                    </div>
-                </div>
-            </td>
+    ${escapeHTML(member.name || "-")}
+</div>
+
+            <div class="member-code">
+                Šifra: ${escapeHTML(id)}
+            </div>
+        </div>
+    </div>
+</td>
 
             <td>
                 <div class="member-program">
@@ -1413,7 +1451,6 @@ function uppercaseInput(id){
 
 uppercaseInput("newMemberName");
 uppercaseInput("newMemberProgram");
-uppercaseInput("newMemberEmail");
 
 /* START */
 loadData();
@@ -1454,6 +1491,7 @@ function deleteMember(){
 
     alert("Član je uspešno obrisan.");
 }
+
 </script>
 
 </body>
