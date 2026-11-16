@@ -431,6 +431,64 @@ main{
         grid-template-columns:1fr;
     }
 }
+
+/* =========================
+   OBAVEŠTENJA O DUGOVANJU
+========================= */
+
+.dugovanja-obavestenja{
+    margin-top:14px;
+    width:100%;
+}
+
+.dugovanje-naslov{
+    background:#fff1f2;
+    color:#b91c1c;
+    border:1px solid #fecaca;
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:12px;
+    font-weight:900;
+    margin-bottom:8px;
+}
+
+.dugovanje-clan{
+    background:#fff7f7;
+    border:1px solid #fecaca;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:7px;
+}
+
+.dugovanje-ime{
+    font-size:13px;
+    font-weight:900;
+    color:#991b1b;
+}
+
+.dugovanje-detalji{
+    font-size:11px;
+    line-height:1.5;
+    color:#7f1d1d;
+    margin-top:4px;
+}
+
+.dugovanje-meseci{
+    font-size:11px;
+    color:#991b1b;
+    margin-top:4px;
+}
+
+.dugovanja-nema{
+    background:#f0fdf4;
+    color:#15803d;
+    border:1px solid #bbf7d0;
+    border-radius:10px;
+    padding:9px 10px;
+    font-size:11px;
+    font-weight:800;
+    margin-top:10px;
+}
 </style>
 </head>
 
@@ -456,10 +514,12 @@ main{
             <div class="stat-label">Naplaćeno ovog meseca</div>
             <div class="stat-value" id="statPaid">0 KM</div>
         </div>
-        <div class="stat">
-            <div class="stat-label">Ukupan dug</div>
-            <div class="stat-value" id="statDebt">0 KM</div>
-        </div>
+<div class="stat">
+    <div class="stat-label">Ukupan dug</div>
+    <div class="stat-value" id="statDebt">0 KM</div>
+
+    <div id="dugovanjaObavestenja" class="dugovanja-obavestenja"></div>
+</div>
     </section>
 
     <section class="panel">
@@ -860,8 +920,176 @@ function renderStats(){
 
     document.getElementById("statDebt").textContent =
         formatMoney(debt);
+
+renderObavestenjaDugovanja();
 }
 
+function renderObavestenjaDugovanja(){
+
+    const box =
+        document.getElementById("dugovanjaObavestenja");
+
+    if(!box) return;
+
+    box.innerHTML = "";
+
+    const lista = Object.values(members)
+        .map(member => {
+
+            const neplaceniMeseci =
+                Object.keys(member.months || {})
+                .filter(month => {
+
+                    const record =
+                        member.months[month];
+
+                    return record &&
+                           record.status === "unpaid";
+                })
+                .sort();
+
+            return {
+                member,
+                neplaceniMeseci
+            };
+
+        })
+        .filter(item =>
+            item.neplaceniMeseci.length >= 2
+        )
+        .sort((a,b) =>
+            b.neplaceniMeseci.length -
+            a.neplaceniMeseci.length
+        );
+
+
+    /* NEMA DUŽNIKA */
+
+    if(lista.length === 0){
+
+        const nema =
+            document.createElement("div");
+
+        nema.className =
+            "dugovanja-nema";
+
+        nema.textContent =
+            "✓ Nema članova sa 2 ili više neplaćena meseca.";
+
+        box.appendChild(nema);
+
+        return;
+    }
+
+
+    /* NASLOV */
+
+    const naslov =
+        document.createElement("div");
+
+    naslov.className =
+        "dugovanje-naslov";
+
+    naslov.textContent =
+        "⚠️ ČLANOVI SA 2 I VIŠE NEPLAĆENA MESECA";
+
+    box.appendChild(naslov);
+
+
+    /* LISTA ČLANOVA */
+
+    lista.forEach(item => {
+
+        const member =
+            item.member;
+
+        const meseci =
+            item.neplaceniMeseci;
+
+        const brojMeseci =
+            meseci.length;
+
+        const dug =
+            (Number(member.price) || 0) *
+            brojMeseci;
+
+
+        const clan =
+            document.createElement("div");
+
+        clan.className =
+            "dugovanje-clan";
+
+
+        const ime =
+            document.createElement("div");
+
+        ime.className =
+            "dugovanje-ime";
+
+        ime.textContent =
+            member.name +
+            " — šifra: " +
+            member.id;
+
+        clan.appendChild(ime);
+
+
+        const detalji =
+            document.createElement("div");
+
+        detalji.className =
+            "dugovanje-detalji";
+
+        detalji.textContent =
+            "Neplaćeno meseci: " +
+            brojMeseci +
+            " | Dug: " +
+            formatMoney(dug);
+
+        clan.appendChild(detalji);
+
+
+        const listaMeseci =
+            document.createElement("div");
+
+        listaMeseci.className =
+            "dugovanje-meseci";
+
+
+        const naziviMeseci =
+            meseci.map(month => {
+
+                const delovi =
+                    month.split("-");
+
+                const godina =
+                    delovi[0];
+
+                const broj =
+                    Number(delovi[1]) - 1;
+
+                return (
+                    monthNames[broj] +
+                    " " +
+                    godina
+                );
+
+            });
+
+
+        listaMeseci.textContent =
+            "Neplaćeni meseci: " +
+            naziviMeseci.join(", ");
+
+        clan.appendChild(listaMeseci);
+
+
+        box.appendChild(clan);
+
+    });
+
+}
 /* =========================
    GRAFIKONI STATISTIKE
 ========================= */
