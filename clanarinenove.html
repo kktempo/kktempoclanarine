@@ -2108,18 +2108,39 @@ function posaljiOpomenu(id) {
             "Srdačan pozdrav,\n\n" +
 
             "KOSARKAŠKI KLUB TEMPO";
+// =========================
+// 4. OTVORI EMAIL
+// =========================
 
-        // =========================
-        // 4. OTVORI GMAIL
-        // =========================
+const isMobile =
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-        const gmailUrl =
-            "https://mail.google.com/mail/?view=cm&fs=1" +
-            "&to=" + encodeURIComponent(member.email) +
-            "&su=" + encodeURIComponent(subject) +
-            "&body=" + encodeURIComponent(body);
+if (isMobile) {
 
-        window.open(gmailUrl, "_blank");
+    // TELEFON / TABLET
+    // Otvara podrazumevanu email aplikaciju
+    const mailto =
+        "mailto:" +
+        member.email +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+
+    window.location.href = mailto;
+
+} else {
+
+    // RAČUNAR
+    // Otvara Gmail u browseru
+    const gmailUrl =
+        "https://mail.google.com/mail/?view=cm&fs=1" +
+        "&to=" + encodeURIComponent(member.email) +
+        "&su=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(body);
+
+    window.open(gmailUrl, "_blank");
+}
 
         // =========================
         // 5. OBAVEŠTENJE
