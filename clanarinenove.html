@@ -1115,6 +1115,74 @@ function getTotalDebt(member){
     return dug;
 }
 
+function getUnpaidDebtMonths(member){
+
+    const cena = Number(member.price) || 0;
+
+    if(!member.months || Object.keys(member.months).length === 0){
+        return [];
+    }
+
+    const meseci = Object.keys(member.months).sort();
+
+    const prviMesec = meseci[0];
+
+    const sada = new Date();
+
+    const trenutniMesec =
+        sada.getFullYear() + "-" +
+        String(sada.getMonth() + 1).padStart(2, "0");
+
+    const neplaceniMeseci = [];
+
+    let datum = new Date(
+        Number(prviMesec.split("-")[0]),
+        Number(prviMesec.split("-")[1]) - 1,
+        1
+    );
+
+    const kraj = new Date(
+        Number(trenutniMesec.split("-")[0]),
+        Number(trenutniMesec.split("-")[1]) - 1,
+        1
+    );
+
+    while(datum <= kraj){
+
+        const godina = datum.getFullYear();
+
+        const brojMeseca =
+            String(datum.getMonth() + 1).padStart(2, "0");
+
+        const kljuc =
+            godina + "-" + brojMeseca;
+
+        const record = member.months[kljuc];
+
+        /*
+         * Ako zapis ne postoji,
+         * mesec se smatra neplaćenim.
+         */
+        if(
+            !record ||
+            (
+                record.status !== "paid" &&
+                record.status !== "pause"
+            )
+        ){
+
+            neplaceniMeseci.push({
+                month: kljuc,
+                amount: cena
+            });
+        }
+
+        datum.setMonth(datum.getMonth() + 1);
+    }
+
+    return neplaceniMeseci;
+}
+
 function getDebtMonthsText(member){
 
     if(!member.months || Object.keys(member.months).length === 0){
@@ -2060,23 +2128,22 @@ function napraviPDFOpomenu(id){
         Number(member.price) || 0;
 
     /*
-     * Uzimamo samo mesece koji su označeni
-     * kao NEPLAĆENI.
+     * PRONALAZIMO SVE NEPLAĆENE MESECE
+     * uključujući i mesece za koje nema zapisa.
      */
     const neplaceniMeseci =
-        Object.entries(member.months || {})
-            .filter(([month, record]) =>
-                record &&
-                record.status === "unpaid"
-            )
-            .sort((a,b) =>
-                a[0].localeCompare(b[0])
-            );
-
+        getUnpaidDebtMonths(member);
 
     const ukupanDug =
-        cena * neplaceniMeseci.length;
+        neplaceniMeseci.reduce(
+            (ukupno, item) => ukupno + item.amount,
+            0
+        );
 
+    if(neplaceniMeseci.length === 0){
+        alert("Ovaj član nema neizmirenih članarina.");
+        return null;
+    }
 
     /* =========================
        NASLOV
@@ -2092,7 +2159,6 @@ function napraviPDFOpomenu(id){
         {align:"center"}
     );
 
-
     pdf.setFontSize(16);
 
     pdf.text(
@@ -2102,9 +2168,6 @@ function napraviPDFOpomenu(id){
         {align:"center"}
     );
 
-
-    /* LINIJA */
-
     pdf.setLineWidth(0.5);
 
     pdf.line(
@@ -2113,7 +2176,6 @@ function napraviPDFOpomenu(id){
         190,
         45
     );
-
 
     /* =========================
        PODACI ČLANA
@@ -2133,7 +2195,6 @@ function napraviPDFOpomenu(id){
         20,
         68
     );
-
 
     /* =========================
        UVOD
@@ -2159,7 +2220,6 @@ function napraviPDFOpomenu(id){
         101
     );
 
-
     /* =========================
        NEPLAĆENI MESECI
     ========================= */
@@ -2172,20 +2232,18 @@ function napraviPDFOpomenu(id){
         118
     );
 
-
     pdf.setFont("helvetica", "normal");
 
     let y = 128;
 
-
-    neplaceniMeseci.forEach(([month], index) => {
+    neplaceniMeseci.forEach((item, index) => {
 
         const tekst =
             (index + 1) +
             ". " +
-            monthLabel(month) +
+            monthLabel(item.month) +
             " — " +
-            formatMoney(cena);
+            formatMoney(item.amount);
 
         pdf.text(
             tekst,
@@ -2195,11 +2253,6 @@ function napraviPDFOpomenu(id){
 
         y += 8;
 
-
-        /*
-         * Ako ima mnogo meseci,
-         * prelazimo na novu stranu.
-         */
         if(y > 265){
 
             pdf.addPage();
@@ -2208,7 +2261,6 @@ function napraviPDFOpomenu(id){
         }
 
     });
-
 
     /* =========================
        UKUPAN DUG
@@ -2225,7 +2277,6 @@ function napraviPDFOpomenu(id){
         20,
         y
     );
-
 
     /* =========================
        ZAVRŠNA PORUKA
@@ -2248,7 +2299,6 @@ function napraviPDFOpomenu(id){
         y + 7
     );
 
-
     pdf.text(
         "Ukoliko je uplata vec izvrsena,",
         20,
@@ -2261,7 +2311,6 @@ function napraviPDFOpomenu(id){
         y + 28
     );
 
-
     /* =========================
        POTPIS
     ========================= */
@@ -2273,7 +2322,6 @@ function napraviPDFOpomenu(id){
         20,
         y + 50
     );
-
 
     /* =========================
        DATUM
@@ -2292,7 +2340,6 @@ function napraviPDFOpomenu(id){
         y + 60
     );
 
-
     return pdf;
 }
 
@@ -2310,41 +2357,70 @@ function posaljiOpomenu(id) {
         return;
     }
 
-    // =========================
-    // PRONALAZAK NEPLAĆENIH MESECI
-    // =========================
-
-    const unpaidMonths = Object.entries(member.months || {})
-        .filter(([month, record]) => {
-            return record && record.status === "unpaid";
-        })
-        .sort((a, b) => a[0].localeCompare(b[0]));
+    /*
+     * PRONAĐI SVE NEPLAĆENE MESECE
+     */
+    const unpaidMonths =
+        getUnpaidDebtMonths(member);
 
     if (unpaidMonths.length === 0) {
-        alert("Ovaj član nema neizmirenih članarina.");
+
+        alert(
+            "Ovaj član nema neizmirenih članarina."
+        );
+
         return;
     }
 
-    // =========================
-    // UKUPAN DUG
-    // =========================
-
-    const cena = Number(member.price) || 0;
-
+    /*
+     * UKUPAN DUG
+     */
     const ukupanDug =
-        cena * unpaidMonths.length;
+        unpaidMonths.reduce(
+            (ukupno, item) =>
+                ukupno + item.amount,
+            0
+        );
 
-    // =========================
-    // POTVRDA
-    // =========================
+    /*
+     * TEKST SVIH NEPLAĆENIH MESECI
+     */
+    const listaMeseci =
+        unpaidMonths.map((item, index) => {
 
+            return (
+                (index + 1) +
+                ". " +
+                monthLabel(item.month) +
+                " — " +
+                formatMoney(item.amount)
+            );
+
+        }).join("\n");
+
+    /*
+     * POTVRDA
+     */
     const potvrda = confirm(
+
         "Da li želiš da pripremiš opomenu za:\n\n" +
+
         member.name + "\n" +
-        "Email: " + member.email + "\n" +
-        "Ukupan dug: " + formatMoney(ukupanDug) +
+
+        "Email: " +
+        member.email + "\n\n" +
+
+        "Neplaćeni meseci: " +
+        unpaidMonths.length + "\n" +
+
+        "Ukupan dug: " +
+        formatMoney(ukupanDug) +
+
         "\n\n" +
-        "PDF će biti sačuvan na računar, a zatim će se otvoriti Gmail."
+
+        "PDF će biti sačuvan na računar, " +
+        "a zatim će se otvoriti Gmail."
+
     );
 
     if (!potvrda) {
@@ -2353,113 +2429,154 @@ function posaljiOpomenu(id) {
 
     try {
 
-        // =========================
-        // 1. NAPRAVI PDF
-        // =========================
+        /*
+         * =========================
+         * 1. NAPRAVI PDF
+         * =========================
+         */
 
-        const pdf = napraviPDFOpomenu(id);
+        const pdf =
+            napraviPDFOpomenu(id);
 
         if (!pdf) {
             return;
         }
 
-        // =========================
-        // 2. SAČUVAJ PDF
-        // =========================
+        /*
+         * =========================
+         * 2. SAČUVAJ PDF
+         * =========================
+         */
 
         const nazivPDF =
             "Opomena_" + id + ".pdf";
 
         pdf.save(nazivPDF);
 
-        // =========================
-        // 3. TEKST EMAILA
-        // =========================
+        /*
+         * =========================
+         * 3. EMAIL NASLOV
+         * =========================
+         */
 
         const subject =
             "Podsetnik na neizmirenu članarinu — KK TEMPO";
 
+        /*
+         * =========================
+         * 4. EMAIL TEKST
+         * =========================
+         */
+
         const body =
-            "Poštovani, " + 
 
-            "ovim putem Vas obaveštavamo da prema evidenciji " +
-            "košarkaškog kluba Tempo postoji neizmireno dugovanje po osnovu članarine.\n\n" +
+            "Poštovani,\n\n" +
 
-            "Član: " + (member.name || "") + "\n" +
+            "ovim putem Vas obaveštavamo da prema " +
+            "evidenciji Košarkaškog kluba Tempo " +
+            "postoji neizmireno dugovanje po osnovu članarine.\n\n" +
 
-            "Šifra člana: " + id + "\n" +
+            "Član: " +
+            (member.name || "") +
+            "\n" +
 
-            "Ukupan dug: " + formatMoney(ukupanDug) + "\n\n" +
+            "Šifra člana: " +
+            id +
+            "\n\n" +
 
-            "Neizmirene članarine:\n" +
+            "NEIZMIRENE ČLANARINE:\n" +
 
-            unpaidMonths.map(([month], index) => {
-                return (
-                    (index + 1) +
-                    ". " +
-                    monthLabel(month) +
-                    " — " +
-                    formatMoney(cena)
-                );
-            }).join("\n") +
+            listaMeseci +
 
             "\n\n" +
 
-            "Molimo Vas da navedeno dugovanje izmirite " +
-            "u najkraćem mogućem roku.\n\n" +
+            "UKUPAN DUG: " +
+            formatMoney(ukupanDug) +
 
-            "Ukoliko je uplata već izvršena, molimo Vas da " +
-            "zanemarite ovu poruku.\n\n" +
+            "\n\n" +
+
+            "Molimo Vas da navedeno dugovanje " +
+            "izmirite u najkraćem mogućem roku.\n\n" +
+
+            "Ukoliko je uplata već izvršena, " +
+            "molimo Vas da zanemarite ovu poruku.\n\n" +
 
             "Srdačan pozdrav,\n\n" +
 
             "KOSARKAŠKI KLUB TEMPO";
-// =========================
-// 4. OTVORI EMAIL
-// =========================
 
-const isMobile =
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-if (isMobile) {
+        /*
+         * =========================
+         * 5. OTVORI EMAIL
+         * =========================
+         */
 
-    // TELEFON / TABLET
-    // Otvara podrazumevanu email aplikaciju
-    const mailto =
-        "mailto:" +
-        member.email +
-        "?subject=" +
-        encodeURIComponent(subject) +
-        "&body=" +
-        encodeURIComponent(body);
+        const isMobile =
+            /Android|iPhone|iPad|iPod/i
+                .test(navigator.userAgent);
 
-    window.location.href = mailto;
+        if (isMobile) {
 
-} else {
+            const mailto =
+                "mailto:" +
+                member.email +
+                "?subject=" +
+                encodeURIComponent(subject) +
+                "&body=" +
+                encodeURIComponent(body);
 
-    // RAČUNAR
-    // Otvara Gmail u browseru
-    const gmailUrl =
-        "https://mail.google.com/mail/?view=cm&fs=1" +
-        "&to=" + encodeURIComponent(member.email) +
-        "&su=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(body);
+            window.location.href =
+                mailto;
 
-    window.open(gmailUrl, "_blank");
-}
+        } else {
 
-        // =========================
-        // 5. OBAVEŠTENJE
-        // =========================
+            const gmailUrl =
+                "https://mail.google.com/mail/?view=cm&fs=1" +
+                "&to=" +
+                encodeURIComponent(member.email) +
+                "&su=" +
+                encodeURIComponent(subject) +
+                "&body=" +
+                encodeURIComponent(body);
+
+            window.open(
+                gmailUrl,
+                "_blank"
+            );
+        }
+
+        /*
+         * =========================
+         * 6. OBAVEŠTENJE
+         * =========================
+         */
 
         setTimeout(function(){
 
             alert(
+
                 "PDF je sačuvan kao:\n\n" +
+
                 nazivPDF +
+
                 "\n\n" +
-                "Gmail je otvoren sa popunjenim primaocem i tekstom.\n\n" +
-                "Sada samo dodaj PDF kao prilog i pošalji email."
+
+                "U opomeni je obuhvaćeno " +
+                unpaidMonths.length +
+                " neplaćenih meseci.\n\n" +
+
+                "Ukupan dug: " +
+                formatMoney(ukupanDug) +
+
+                "\n\n" +
+
+                "Gmail je otvoren sa popunjenim " +
+                "primaocem i tekstom.\n\n" +
+
+                "Sada samo dodaj PDF kao prilog " +
+                "i pošalji email."
+
             );
 
         }, 1000);
@@ -2472,8 +2589,12 @@ if (isMobile) {
         );
 
         alert(
-            "Došlo je do greške prilikom pripreme opomene.\n\n" +
+
+            "Došlo je do greške prilikom " +
+            "pripreme opomene.\n\n" +
+
             error.message
+
         );
     }
 }
