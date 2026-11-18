@@ -496,11 +496,178 @@ main{
     font-weight:800;
     margin-top:10px;
 }
+
+/* =========================
+   PROFESIONALNI GLAVNI MENI
+========================= */
+
+.glavni-meni {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    z-index: 9999;
+}
+
+/* Dugme - kvadratić */
+.glavni-meni-dugme {
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s ease;
+}
+
+/* Tri linije */
+.glavni-meni-dugme span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #222;
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: 0.2s ease;
+}
+
+.glavni-meni-dugme:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+}
+
+/* Otvoren meni */
+.glavni-meni-lista {
+    position: absolute;
+    top: 56px;
+    right: 0;
+
+    width: 220px;
+    background: white;
+
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+
+    padding: 8px;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+
+    transition: 0.2s ease;
+}
+
+/* Kada je otvoren */
+.glavni-meni.otvoren .glavni-meni-lista {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Stavke menija */
+.glavni-meni-stavka {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    padding: 13px 14px;
+
+    border: none;
+    background: transparent;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 800;
+    color: #222;
+
+    text-align: left;
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.glavni-meni-stavka:hover {
+    background: #f3f3f3;
+    color: #c8102e;
+}
+
+/* Aktivna stavka */
+.glavni-meni-stavka.aktivna {
+    background: #c8102e;
+    color: white;
+}
+
+/* Razmak između stavki */
+.glavni-meni-stavka + .glavni-meni-stavka {
+    margin-top: 3px;
+}
+
+/* Mobilni prikaz */
+@media (max-width: 600px) {
+
+    .glavni-meni {
+        top: 12px;
+        right: 12px;
+    }
+
+    .glavni-meni-lista {
+        width: 200px;
+    }
+}
 </style>
 </head>
 
 <body>
+<div class="glavni-meni" id="glavniMeni">
 
+    <button
+        class="glavni-meni-dugme"
+        id="glavniMeniDugme"
+        aria-label="Glavni meni"
+        type="button"
+    >
+        <div>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <div class="glavni-meni-lista">
+
+        <button
+            class="glavni-meni-stavka aktivna"
+            data-sekcija="finansije"
+            type="button"
+        >
+            FINANSIJE
+        </button>
+
+        <button
+            class="glavni-meni-stavka"
+            data-sekcija="kontakt"
+            type="button"
+        >
+            KONTAKT PODACI
+        </button>
+
+        <button
+            class="glavni-meni-stavka"
+            data-sekcija="ai"
+            type="button"
+        >
+            AI SISTEM
+        </button>
+
+    </div>
+
+</div>
 <header>
     <div class="header-inner">
         <div>
@@ -2694,6 +2861,56 @@ function deleteMember(){
 
     alert("Član je uspešno obrisan.");
 }
+
+/* =========================
+   GLAVNI PADAJUĆI MENI
+========================= */
+
+const glavniMeni = document.getElementById("glavniMeni");
+const glavniMeniDugme = document.getElementById("glavniMeniDugme");
+
+glavniMeniDugme.addEventListener("click", function(event) {
+
+    event.stopPropagation();
+
+    glavniMeni.classList.toggle("otvoren");
+
+});
+
+
+/* Klik na stavku menija */
+
+document.querySelectorAll(".glavni-meni-stavka").forEach(function(stavka) {
+
+    stavka.addEventListener("click", function() {
+
+        const sekcija = this.dataset.sekcija;
+
+        document.querySelectorAll(".glavni-meni-stavka")
+            .forEach(function(item) {
+                item.classList.remove("aktivna");
+            });
+
+        this.classList.add("aktivna");
+
+        console.log("Izabrano:", sekcija);
+
+        glavniMeni.classList.remove("otvoren");
+
+    });
+
+});
+
+
+/* Klik van menija zatvara meni */
+
+document.addEventListener("click", function(event) {
+
+    if (!glavniMeni.contains(event.target)) {
+        glavniMeni.classList.remove("otvoren");
+    }
+
+});
 
 </script>
 
