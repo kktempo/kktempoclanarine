@@ -2886,14 +2886,17 @@ document.querySelectorAll(".glavni-meni-stavka").forEach(function(stavka) {
 
         const sekcija = this.dataset.sekcija;
 
+        if(sekcija === "finansije"){
+            window.location.href = "finansije.html";
+            return;
+        }
+
         document.querySelectorAll(".glavni-meni-stavka")
             .forEach(function(item) {
                 item.classList.remove("aktivna");
             });
 
         this.classList.add("aktivna");
-
-        console.log("Izabrano:", sekcija);
 
         glavniMeni.classList.remove("otvoren");
 
