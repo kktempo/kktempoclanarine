@@ -881,54 +881,143 @@ function getMonthStatus(member, month){
     return member.months[month];
 }
 
-
 function getTotalDebt(member){
 
     const price = Number(member.price) || 0;
-    let debt = 0;
 
-    Object.values(member.months || {}).forEach(record => {
+    if(!member.months || Object.keys(member.months).length === 0){
+        return 0;
+    }
 
-        if(!record || record.status !== "paid" && record.status !== "pause"){
-            debt += price;
+    const meseci = Object.keys(member.months).sort();
+
+    const prviMesec = meseci[0];
+
+    const sada = new Date();
+
+    const trenutniMesec =
+        sada.getFullYear() + "-" +
+        String(sada.getMonth() + 1).padStart(2, "0");
+
+    let dug = 0;
+
+    let datum = new Date(
+        Number(prviMesec.split("-")[0]),
+        Number(prviMesec.split("-")[1]) - 1,
+        1
+    );
+
+    const kraj = new Date(
+        Number(trenutniMesec.split("-")[0]),
+        Number(trenutniMesec.split("-")[1]) - 1,
+        1
+    );
+
+    while(datum <= kraj){
+
+        const godina = datum.getFullYear();
+
+        const brojMeseca =
+            String(datum.getMonth() + 1).padStart(2, "0");
+
+        const kljuc =
+            godina + "-" + brojMeseca;
+
+        const record = member.months[kljuc];
+
+        /*
+         * Ako zapis ne postoji,
+         * smatramo da član nije platio taj mesec.
+         */
+        if(!record){
+
+            dug += price;
+
+        }else if(
+            record.status !== "paid" &&
+            record.status !== "pause"
+        ){
+
+            dug += price;
+
         }
 
-    });
+        datum.setMonth(datum.getMonth() + 1);
+    }
 
-    return debt;
+    return dug;
 }
 
 function getDebtMonthsText(member){
 
-    const neplaceniMeseci =
-        Object.keys(member.months || {})
-            .filter(month => {
+    if(!member.months || Object.keys(member.months).length === 0){
+        return "";
+    }
 
-                const record = member.months[month];
+    const meseci = Object.keys(member.months).sort();
 
-                return record &&
-                       record.status === "unpaid";
-            })
-            .sort();
+    const prviMesec = meseci[0];
+
+    const sada = new Date();
+
+    const trenutniMesec =
+        sada.getFullYear() + "-" +
+        String(sada.getMonth() + 1).padStart(2, "0");
+
+    const neplaceniMeseci = [];
+
+    let datum = new Date(
+        Number(prviMesec.split("-")[0]),
+        Number(prviMesec.split("-")[1]) - 1,
+        1
+    );
+
+    const kraj = new Date(
+        Number(trenutniMesec.split("-")[0]),
+        Number(trenutniMesec.split("-")[1]) - 1,
+        1
+    );
+
+    while(datum <= kraj){
+
+        const godina = datum.getFullYear();
+
+        const brojMeseca =
+            String(datum.getMonth() + 1).padStart(2, "0");
+
+        const kljuc =
+            godina + "-" + brojMeseca;
+
+        const record = member.months[kljuc];
+
+        /*
+         * Ne postoji zapis = nije plaćeno
+         */
+        if(
+            !record ||
+            (
+                record.status !== "paid" &&
+                record.status !== "pause"
+            )
+        ){
+
+            neplaceniMeseci.push(
+                monthNames[datum.getMonth()] +
+                " " +
+                godina +
+                "."
+            );
+        }
+
+        datum.setMonth(datum.getMonth() + 1);
+    }
 
     if(neplaceniMeseci.length === 0){
         return "";
     }
 
-    const naziviMeseci = neplaceniMeseci.map(month => {
-
-        const delovi = month.split("-");
-
-        const godina = delovi[0];
-
-        const brojMeseca = Number(delovi[1]) - 1;
-
-        return monthNames[brojMeseca] + " " + godina;
-    });
-
-    return "DUG: " + naziviMeseci.join(", ") + ".";
+    return "DUG: " + neplaceniMeseci.join(", ");
 }
-
 
 function getStatusText(status){
     if(status === "paid") return "PLAĆENO";
