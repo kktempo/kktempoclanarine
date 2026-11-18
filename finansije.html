@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>KK Tempo — Finansije</title>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <style>
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -43,7 +54,7 @@ body{
 }
 
 /* =========================
-   GLAVNI KONTEJNER
+   KONTEJNER
 ========================= */
 
 .container{
@@ -53,7 +64,7 @@ body{
 }
 
 /* =========================
-   PRETRAGA
+   PANEL
 ========================= */
 
 .panel{
@@ -75,6 +86,92 @@ body{
     font-size:13px;
     margin-bottom:18px;
 }
+
+/* =========================
+   IZBOR MESECA
+========================= */
+
+.month-control{
+    display:flex;
+    align-items:end;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.month-control-box{
+    flex:1;
+    min-width:220px;
+}
+
+.month-control-box label{
+    display:block;
+    font-size:11px;
+    font-weight:900;
+    color:#777;
+    margin-bottom:7px;
+}
+
+.month-control-box select{
+    width:100%;
+    height:46px;
+    border:1px solid #d5d9df;
+    border-radius:9px;
+    padding:0 12px;
+    font-size:15px;
+    background:white;
+}
+
+.button-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:none;
+    border-radius:9px;
+    min-height:44px;
+    padding:0 16px;
+    font-size:13px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+    background:#c8102e;
+    color:white;
+}
+
+.btn-dark{
+    background:#111827;
+    color:white;
+}
+
+.btn-green{
+    background:#15803d;
+    color:white;
+}
+
+.btn-gray{
+    background:#e5e7eb;
+    color:#222;
+}
+
+.btn-small{
+    min-height:36px;
+    padding:0 12px;
+    font-size:11px;
+}
+
+/* =========================
+   SEARCH
+========================= */
 
 .search{
     position:relative;
@@ -128,6 +225,104 @@ body{
     color:#777;
     font-size:12px;
     margin-top:4px;
+}
+
+/* =========================
+   BULK KARTICE
+========================= */
+
+.cards-panel{
+    background:#fff;
+    border-radius:15px;
+    padding:22px;
+    box-shadow:0 5px 20px rgba(15,23,42,.06);
+    margin-bottom:20px;
+}
+
+.cards-title{
+    font-size:20px;
+    font-weight:900;
+}
+
+.cards-subtitle{
+    color:#777;
+    font-size:13px;
+    margin-top:5px;
+    margin-bottom:18px;
+}
+
+.cards-info{
+    background:#f8fafc;
+    border:1px solid #e3e7ec;
+    border-radius:10px;
+    padding:14px;
+    margin-bottom:18px;
+    font-size:13px;
+    color:#555;
+}
+
+.cards-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+/* =========================
+   LISTA ČLANOVA
+========================= */
+
+.finance-list{
+    margin-top:20px;
+}
+
+.finance-row{
+    display:grid;
+    grid-template-columns:1.7fr 1fr 1fr 1fr auto;
+    gap:12px;
+    align-items:center;
+    padding:14px 10px;
+    border-bottom:1px solid #e8ebef;
+}
+
+.finance-row:last-child{
+    border-bottom:none;
+}
+
+.finance-head{
+    font-size:11px;
+    color:#777;
+    font-weight:900;
+}
+
+.finance-name{
+    font-weight:900;
+}
+
+.finance-info{
+    color:#777;
+    font-size:11px;
+    margin-top:4px;
+}
+
+.status-paid{
+    color:#15803d;
+    font-weight:900;
+}
+
+.status-unpaid{
+    color:#c8102e;
+    font-weight:900;
+}
+
+.status-pause{
+    color:#a16207;
+    font-weight:900;
+}
+
+.row-actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
 }
 
 /* =========================
@@ -320,6 +515,166 @@ body{
 }
 
 /* =========================
+   SKRIVENI PDF
+========================= */
+
+#pdfTemplate{
+    position:absolute;
+    left:-99999px;
+    top:0;
+    width:794px;
+    background:white;
+    color:#111;
+    padding:45px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.pdf-header{
+    text-align:center;
+    border-bottom:3px solid #111827;
+    padding-bottom:20px;
+    margin-bottom:25px;
+}
+
+.pdf-header h1{
+    font-size:25px;
+    margin-bottom:5px;
+}
+
+.pdf-header h2{
+    font-size:18px;
+    font-weight:700;
+}
+
+.pdf-member{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:25px;
+}
+
+.pdf-info-box{
+    border:1px solid #ddd;
+    padding:12px;
+    border-radius:5px;
+}
+
+.pdf-info-label{
+    font-size:10px;
+    color:#777;
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.pdf-info-value{
+    font-size:14px;
+    font-weight:bold;
+}
+
+.pdf-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+.pdf-table th{
+    background:#111827;
+    color:white;
+    padding:9px;
+    font-size:11px;
+    text-align:left;
+}
+
+.pdf-table td{
+    border-bottom:1px solid #ddd;
+    padding:9px;
+    font-size:11px;
+}
+
+.pdf-paid{
+    color:#15803d;
+    font-weight:bold;
+}
+
+.pdf-unpaid{
+    color:#c8102e;
+    font-weight:bold;
+}
+
+.pdf-pause{
+    color:#a16207;
+    font-weight:bold;
+}
+
+.pdf-summary{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+}
+
+.pdf-summary-box{
+    border:1px solid #ddd;
+    padding:13px;
+    border-radius:5px;
+    text-align:center;
+}
+
+.pdf-summary-label{
+    font-size:9px;
+    color:#777;
+    font-weight:bold;
+}
+
+.pdf-summary-value{
+    margin-top:5px;
+    font-size:15px;
+    font-weight:bold;
+}
+
+.pdf-footer{
+    margin-top:35px;
+    font-size:10px;
+    color:#777;
+    text-align:center;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(17,24,39,.65);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+}
+
+.loading-box{
+    background:white;
+    border-radius:15px;
+    padding:30px;
+    width:90%;
+    max-width:420px;
+    text-align:center;
+}
+
+.loading-title{
+    font-size:19px;
+    font-weight:900;
+}
+
+.loading-text{
+    margin-top:10px;
+    color:#777;
+    font-size:13px;
+    line-height:1.5;
+}
+
+/* =========================
    MOBILNI
 ========================= */
 
@@ -329,10 +684,23 @@ body{
         grid-template-columns:1fr 1fr;
     }
 
+    .finance-row{
+        grid-template-columns:1.4fr 1fr 1fr;
+    }
+
+    .finance-row .finance-status{
+        display:none;
+    }
+
+    .finance-row .row-actions{
+        grid-column:1 / -1;
+    }
+
     .month-row{
         grid-template-columns:1.2fr 1fr 1fr 1fr;
         font-size:13px;
     }
+
 }
 
 @media(max-width:600px){
@@ -398,34 +766,146 @@ body{
         font-weight:900;
         margin-bottom:2px;
     }
+
+    .pdf-member{
+        grid-template-columns:1fr;
+    }
+
+    .pdf-summary{
+        grid-template-columns:1fr;
+    }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
 <header class="header">
+
     <h1>ANALITIČKE KARTICE ČLANOVA</h1>
+
+    <p>
+        Finansije • Mesečni pregled • PDF kartice
+    </p>
+
 </header>
+
 
 <main class="container">
 
-    <section class="panel">
 
-        <div class="panel-title">FINANSIJE</div>
+    <!-- =========================================
+         FINANSIJSKE KARTICE
+    ========================================== -->
 
-        <div class="panel-subtitle">
-            Pretražite člana i otvorite njegovu finansijsku analitiku.
+    <section class="cards-panel">
+
+        <div class="cards-title">
+            FINANSIJSKE KARTICE
         </div>
 
+        <div class="cards-subtitle">
+
+            Na kraju svakog meseca izaberite mesec,
+            generišite finansijske kartice i pošaljite
+            ih roditeljima.
+
+        </div>
+
+
+        <div class="month-control">
+
+            <div class="month-control-box">
+
+                <label>
+                    MESEC ZA KOJI SE GENERIŠU KARTICE
+                </label>
+
+                <select id="cardMonth"></select>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    class="btn btn-dark"
+                    onclick="renderFinanceList()"
+                >
+                    PRIKAŽI KARTICE
+                </button>
+
+
+                <button
+                    class="btn btn-primary"
+                    onclick="generateAllPDFs()"
+                >
+                    GENERIŠI SVE PDF KARTICE
+                </button>
+
+
+                <button
+                    class="btn btn-green"
+                    onclick="sendAllCards()"
+                >
+                    POŠALJI SVIMA NA MAIL
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="cards-info">
+
+            <strong>VAŽNO:</strong>
+            PDF se pravi posebno za svakog člana.
+            U njemu se prikazuje finansijska istorija
+            od prvog evidentiranog meseca do izabranog meseca.
+
+        </div>
+
+
+        <div
+            class="finance-list"
+            id="financeList"
+        ></div>
+
+    </section>
+
+
+    <!-- =========================================
+         PRETRAGA
+    ========================================== -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            FINANSIJE
+        </div>
+
+        <div class="panel-subtitle">
+
+            Pretražite člana i otvorite njegovu
+            finansijsku analitiku.
+
+        </div>
+
+
         <div class="search">
+
             <input
                 type="text"
                 id="searchMember"
                 placeholder="Pretraži po imenu, prezimenu ili šifri člana..."
                 autocomplete="off"
             >
+
         </div>
+
 
         <div
             class="results"
@@ -434,6 +914,10 @@ body{
 
     </section>
 
+
+    <!-- =========================================
+         ANALITIKA
+    ========================================== -->
 
     <section
         class="analytics"
@@ -454,12 +938,15 @@ body{
 
         <div class="month-card">
 
-            <h2>Mesečni pregled</h2>
+            <h2>
+                Mesečni pregled
+            </h2>
 
             <p>
                 Zaduženja se računaju po mesečnoj članarini,
                 a uplate se preuzimaju iz evidencije članarina.
             </p>
+
 
             <div id="months"></div>
 
@@ -468,15 +955,22 @@ body{
     </section>
 
 
+    <!-- =========================================
+         PRAZNO
+    ========================================== -->
+
     <section
         class="empty"
         id="empty"
     >
 
-        <div class="empty-icon"></div>
+        <div class="empty-icon">
+            💳
+        </div>
 
         <div>
-            Unesite ime ili šifru člana da otvorite finansijsku karticu.
+            Unesite ime ili šifru člana
+            da otvorite finansijsku karticu.
         </div>
 
     </section>
@@ -484,16 +978,59 @@ body{
 
     <div class="info-box">
 
-        <strong>POVEZANO SA EVIDENCIJOM ČLANARINA</strong><br>
+        <strong>
+            POVEZANO SA EVIDENCIJOM ČLANARINA
+        </strong>
 
-        Ova stranica koristi iste podatke kao početna stranica
-        za članarine. Kada na početnoj stranici evidentirate uplatu
-        za određeni mesec, ta uplata se automatski prikazuje i ovde
-        nakon osvežavanja podataka.
+        <br>
+
+        Ova stranica koristi iste podatke kao
+        početna stranica za članarine.
+
+        Kada na početnoj stranici evidentirate uplatu
+        za određeni mesec, ta uplata se automatski
+        prikazuje i ovde nakon osvežavanja podataka.
 
     </div>
 
 </main>
+
+
+<!-- =========================================
+     SKRIVENI HTML ZA PDF
+========================================== -->
+
+<div id="pdfTemplate"></div>
+
+
+<!-- =========================================
+     LOADING
+========================================== -->
+
+<div
+    class="loading-overlay"
+    id="loadingOverlay"
+>
+
+    <div class="loading-box">
+
+        <div
+            class="loading-title"
+            id="loadingTitle"
+        >
+            Molimo sačekajte...
+        </div>
+
+        <div
+            class="loading-text"
+            id="loadingText"
+        >
+            Priprema se dokument.
+        </div>
+
+    </div>
+
+</div>
 
 
 <script>
@@ -502,18 +1039,52 @@ body{
    PODEŠAVANJA
 ===================================================== */
 
-/*
-   OVA STRANICA KORISTI ISTI localStorage
-   KAO TVOJA POSTOJEĆA STRANICA.
+const STORAGE_KEY =
+    "KK_TEMPO_CLANARINE_NOVA";
 
-   Ako je u tvojoj početnoj stranici STORAGE_KEY
-   drugačiji, promeni samo ovu vrednost.
+
+/*
+=========================================================
+ EMAILJS PODEŠAVANJA
+=========================================================
+
+PUBLIC KEY JE TVOJ POSTOJEĆI PUBLIC KEY.
+
+OVDE MORAŠ UPISATI:
+
+1. SERVICE ID
+2. TEMPLATE ID
+
+Njih ćemo podesiti u EmailJS-u.
+
 */
 
-const STORAGE_KEY = "KK_TEMPO_CLANARINE_NOVA";
+const EMAILJS_PUBLIC_KEY =
+    "GuRKvmD373uhD7ffX";
+
+const EMAILJS_SERVICE_ID =
+    "OVDE_UPISI_SERVICE_ID";
+
+const EMAILJS_TEMPLATE_ID =
+    "OVDE_UPISI_TEMPLATE_ID";
 
 
 let members = {};
+
+
+/* =====================================================
+   EMAILJS
+===================================================== */
+
+if(
+    typeof emailjs !== "undefined"
+){
+
+    emailjs.init({
+        publicKey: EMAILJS_PUBLIC_KEY
+    });
+
+}
 
 
 /* =====================================================
@@ -525,7 +1096,9 @@ function loadData(){
     try{
 
         const saved =
-            localStorage.getItem(STORAGE_KEY);
+            localStorage.getItem(
+                STORAGE_KEY
+            );
 
         if(saved){
 
@@ -553,7 +1126,7 @@ function loadData(){
 
 
 /* =====================================================
-   POMOĆNE FUNKCIJE
+   HTML ZAŠTITA
 ===================================================== */
 
 function escapeHTML(value){
@@ -568,6 +1141,10 @@ function escapeHTML(value){
 }
 
 
+/* =====================================================
+   NOVAC
+===================================================== */
+
 function formatMoney(value){
 
     return (
@@ -579,7 +1156,12 @@ function formatMoney(value){
 }
 
 
+/* =====================================================
+   MESECI
+===================================================== */
+
 const monthNames = [
+
     "Januar",
     "Februar",
     "Mart",
@@ -592,6 +1174,7 @@ const monthNames = [
     "Oktobar",
     "Novembar",
     "Decembar"
+
 ];
 
 
@@ -600,9 +1183,11 @@ function monthLabel(month){
     const parts =
         String(month).split("-");
 
+
     if(parts.length !== 2){
         return month;
     }
+
 
     const year =
         Number(parts[0]);
@@ -610,18 +1195,32 @@ function monthLabel(month){
     const monthNumber =
         Number(parts[1]);
 
-    if(!year || !monthNumber){
+
+    if(
+        !year ||
+        !monthNumber
+    ){
+
         return month;
+
     }
 
+
     return (
-        monthNames[monthNumber - 1] +
+        monthNames[
+            monthNumber - 1
+        ] +
         " " +
-        year + "."
+        year +
+        "."
     );
 
 }
 
+
+/* =====================================================
+   INICIJALI
+===================================================== */
 
 function getInitials(name){
 
@@ -631,15 +1230,20 @@ function getInitials(name){
             .split(/\s+/)
             .filter(Boolean);
 
+
     if(parts.length === 0){
         return "?";
     }
 
+
     if(parts.length === 1){
+
         return parts[0]
             .substring(0,2)
             .toUpperCase();
+
     }
+
 
     return (
         parts[0][0] +
@@ -650,13 +1254,14 @@ function getInitials(name){
 
 
 /* =====================================================
-   DATUMI
+   TRENUTNI MESEC
 ===================================================== */
 
 function currentMonth(){
 
     const date =
         new Date();
+
 
     return (
         date.getFullYear() +
@@ -669,22 +1274,31 @@ function currentMonth(){
 }
 
 
+/* =====================================================
+   DATUM MESECA
+===================================================== */
+
 function monthDate(month){
 
     const parts =
-        month.split("-");
+        String(month).split("-");
+
 
     return new Date(
+
         Number(parts[0]),
+
         Number(parts[1]) - 1,
+
         1
+
     );
 
 }
 
 
 /* =====================================================
-   POČETNI MESEC
+   PRVI MESEC ČLANA
 ===================================================== */
 
 function firstMemberMonth(member){
@@ -694,9 +1308,11 @@ function firstMemberMonth(member){
             member.months || {}
         );
 
+
     if(months.length === 0){
         return null;
     }
+
 
     return months.sort()[0];
 
@@ -704,28 +1320,35 @@ function firstMemberMonth(member){
 
 
 /* =====================================================
-   SVI MESECI OD PRVOG DO TEKUĆEG
+   MESECI DO IZABRANOG MESECA
 ===================================================== */
 
-function getFinancialMonths(member){
+function getFinancialMonthsUntil(
+    member,
+    endMonth
+){
 
     const first =
         firstMemberMonth(member);
+
 
     if(!first){
         return [];
     }
 
+
     const start =
         monthDate(first);
 
     const end =
-        monthDate(currentMonth());
+        monthDate(endMonth);
+
 
     const result = [];
 
     let date =
         new Date(start);
+
 
     while(date <= end){
 
@@ -736,7 +1359,9 @@ function getFinancialMonths(member){
                 date.getMonth() + 1
             ).padStart(2,"0");
 
+
         result.push(month);
+
 
         date.setMonth(
             date.getMonth() + 1
@@ -744,16 +1369,35 @@ function getFinancialMonths(member){
 
     }
 
+
     return result;
 
 }
 
 
 /* =====================================================
-   STATUS MESECA
+   STARIJA FUNKCIJA
+   ZA ANALITIKU DO TEKUĆEG MESECA
 ===================================================== */
 
-function getMonthRecord(member, month){
+function getFinancialMonths(member){
+
+    return getFinancialMonthsUntil(
+        member,
+        currentMonth()
+    );
+
+}
+
+
+/* =====================================================
+   ZAPIS MESECA
+===================================================== */
+
+function getMonthRecord(
+    member,
+    month
+){
 
     if(
         member.months &&
@@ -764,74 +1408,246 @@ function getMonthRecord(member, month){
 
     }
 
+
     /*
-       Ako zapis ne postoji, smatra se
-       da član nije uplatio taj mesec.
+       Ako zapis ne postoji,
+       smatra se da nije plaćeno.
     */
 
     return {
+
         status:"unpaid",
+
         automatic:true
+
     };
 
 }
 
 
 /* =====================================================
-   PRIKAZ REZULTATA PRETRAGE
+   STATUS
 ===================================================== */
 
-function searchMembers(){
+function getStatusData(
+    member,
+    month
+){
 
-    const input =
-        document.getElementById(
-            "searchMember"
-        );
-
-    const text =
-        input.value
-            .trim()
-            .toLocaleLowerCase("sr");
-
-    const results =
-        document.getElementById(
-            "results"
+    const record =
+        getMonthRecord(
+            member,
+            month
         );
 
 
-    results.innerHTML = "";
+    if(
+        record.status === "paid"
+    ){
 
+        return {
 
-    if(!text){
+            text:"PLAĆENO",
 
-        hideAnalytics();
+            className:"pdf-paid",
 
-        return;
+            paid:true,
+
+            paused:false
+
+        };
 
     }
 
 
-    const found =
+    if(
+        record.status === "pause"
+    ){
+
+        return {
+
+            text:"PAUZA",
+
+            className:"pdf-pause",
+
+            paid:false,
+
+            paused:true
+
+        };
+
+    }
+
+
+    return {
+
+        text:"NIJE PLAĆENO",
+
+        className:"pdf-unpaid",
+
+        paid:false,
+
+        paused:false
+
+    };
+
+}
+
+
+/* =====================================================
+   POPUNJAVANJE IZBORA MESECA
+===================================================== */
+
+function populateMonthSelect(){
+
+    const select =
+        document.getElementById(
+            "cardMonth"
+        );
+
+
+    select.innerHTML = "";
+
+
+    const allMonths = new Set();
+
+
+    Object.values(members)
+        .forEach(
+            member => {
+
+                Object.keys(
+                    member.months || {}
+                )
+                .forEach(
+                    month =>
+                        allMonths.add(month)
+                );
+
+            }
+        );
+
+
+    /*
+       Dodajemo i trenutni mesec
+    */
+
+    allMonths.add(
+        currentMonth()
+    );
+
+
+    const sorted =
+        Array.from(allMonths)
+            .sort();
+
+
+    /*
+       Ako nema podataka,
+       ipak prikaži trenutni mesec.
+    */
+
+    if(sorted.length === 0){
+
+        sorted.push(
+            currentMonth()
+        );
+
+    }
+
+
+    sorted.forEach(
+        month => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                month;
+
+
+            option.textContent =
+                monthLabel(month);
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    select.value =
+        currentMonth();
+
+
+    /*
+       Ako trenutni mesec nije u listi,
+       dodaj ga.
+    */
+
+    if(
+        !Array.from(
+            select.options
+        ).some(
+            option =>
+                option.value ===
+                currentMonth()
+        )
+    ){
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            currentMonth();
+
+        option.textContent =
+            monthLabel(
+                currentMonth()
+            );
+
+        select.appendChild(
+            option
+        );
+
+        select.value =
+            currentMonth();
+
+    }
+
+}
+
+
+/* =====================================================
+   FINANSIJSKA LISTA SVIH ČLANOVA
+===================================================== */
+
+function renderFinanceList(){
+
+    const box =
+        document.getElementById(
+            "financeList"
+        );
+
+
+    const selectedMonth =
+        document.getElementById(
+            "cardMonth"
+        ).value;
+
+
+    box.innerHTML = "";
+
+
+    const entries =
         Object.entries(members)
-            .filter(
-                ([id, member]) => {
-
-                    const name =
-                        String(
-                            member.name || ""
-                        ).toLocaleLowerCase("sr");
-
-                    const code =
-                        String(id)
-                            .toLocaleLowerCase("sr");
-
-                    return (
-                        name.includes(text) ||
-                        code.includes(text)
-                    );
-
-                }
-            )
             .sort(
                 (a,b) =>
                     String(
@@ -848,71 +1664,1031 @@ function searchMembers(){
             );
 
 
-    if(found.length === 0){
+    if(entries.length === 0){
 
-        results.innerHTML = `
+        box.innerHTML = `
+
             <div class="no-results">
-                Nema člana koji odgovara pretrazi.
-            </div>
-        `;
 
-        hideAnalytics();
+                Nema upisanih članova.
+
+            </div>
+
+        `;
 
         return;
 
     }
 
 
-    found.forEach(
-        ([id, member]) => {
+    let html = `
 
-            const item =
-                document.createElement("div");
+        <div class="finance-row finance-head">
 
-            item.className =
-                "result";
+            <div>ČLAN</div>
+
+            <div>STATUS</div>
+
+            <div>MESEČNA ČLANARINA</div>
+
+            <div class="finance-status">
+                DUG
+            </div>
+
+            <div>AKCIJE</div>
+
+        </div>
+
+    `;
 
 
-            item.innerHTML = `
+    entries.forEach(
+        ([id,member]) => {
 
-                <div class="result-name">
-                    ${escapeHTML(
-                        member.name || "-"
-                    )}
-                </div>
+            const months =
+                getFinancialMonthsUntil(
+                    member,
+                    selectedMonth
+                );
 
-                <div class="result-info">
 
-                    Šifra:
-                    ${escapeHTML(id)}
+            const price =
+                Number(
+                    member.price
+                ) || 0;
 
-                    ${
-                        member.program
-                        ? " • " +
-                          escapeHTML(
-                              member.program
-                          )
-                        : ""
+
+            let debt = 0;
+
+            let currentStatus =
+                "NIJE PLAĆENO";
+
+            let currentClass =
+                "status-unpaid";
+
+
+            months.forEach(
+                month => {
+
+                    const record =
+                        getMonthRecord(
+                            member,
+                            month
+                        );
+
+
+                    if(
+                        record.status !== "paid" &&
+                        record.status !== "pause"
+                    ){
+
+                        debt += price;
+
                     }
-
-                </div>
-
-            `;
-
-
-            item.addEventListener(
-                "click",
-                function(){
-
-                    openAnalytics(id);
-
-                    results.innerHTML = "";
 
                 }
             );
 
 
-            results.appendChild(item);
+            const selectedRecord =
+                getMonthRecord(
+                    member,
+                    selectedMonth
+                );
+
+
+            if(
+                selectedRecord.status === "paid"
+            ){
+
+                currentStatus =
+                    "PLAĆENO";
+
+                currentClass =
+                    "status-paid";
+
+            }
+            else if(
+                selectedRecord.status === "pause"
+            ){
+
+                currentStatus =
+                    "PAUZA";
+
+                currentClass =
+                    "status-pause";
+
+            }
+
+
+            html += `
+
+                <div class="finance-row">
+
+                    <div>
+
+                        <div class="finance-name">
+
+                            ${escapeHTML(
+                                member.name || "-"
+                            )}
+
+                        </div>
+
+                        <div class="finance-info">
+
+                            Šifra:
+                            ${escapeHTML(id)}
+
+                            ${
+                                member.email
+                                ? " • " +
+                                  escapeHTML(
+                                      member.email
+                                  )
+                                : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="${currentClass}">
+
+                        ${currentStatus}
+
+                    </div>
+
+
+                    <div class="amount">
+
+                        ${formatMoney(price)}
+
+                    </div>
+
+
+                    <div class="finance-status">
+
+                        <span class="${
+                            debt > 0
+                            ? "status-unpaid"
+                            : "status-paid"
+                        }">
+
+                            ${formatMoney(debt)}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="row-actions">
+
+                        <button
+                            class="btn btn-dark btn-small"
+                            onclick="generatePDF('${escapeJS(id)}')"
+                        >
+                            PDF
+                        </button>
+
+
+                        <button
+                            class="btn btn-green btn-small"
+                            onclick="sendCard('${escapeJS(id)}')"
+                        >
+                            MAIL
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    box.innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   ESCAPE ZA JAVASCRIPT
+===================================================== */
+
+function escapeJS(value){
+
+    return String(value ?? "")
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'")
+        .replace(/"/g,'\\"');
+
+}
+
+
+/* =====================================================
+   PDF HTML
+===================================================== */
+
+function buildPDFHTML(
+    id,
+    member,
+    selectedMonth
+){
+
+    const months =
+        getFinancialMonthsUntil(
+            member,
+            selectedMonth
+        );
+
+
+    const price =
+        Number(
+            member.price
+        ) || 0;
+
+
+    let totalDebt = 0;
+
+    let totalPaid = 0;
+
+
+    let rows = "";
+
+
+    months.forEach(
+        month => {
+
+            const record =
+                getMonthRecord(
+                    member,
+                    month
+                );
+
+
+            const status =
+                getStatusData(
+                    member,
+                    month
+                );
+
+
+            let debt =
+                0;
+
+            let paid =
+                0;
+
+
+            if(
+                status.paid
+            ){
+
+                paid =
+                    price;
+
+                totalPaid +=
+                    price;
+
+            }
+            else if(
+                !status.paused
+            ){
+
+                debt =
+                    price;
+
+                totalDebt +=
+                    price;
+
+            }
+
+
+            rows += `
+
+                <tr>
+
+                    <td>
+                        ${escapeHTML(
+                            monthLabel(month)
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatMoney(price)}
+                    </td>
+
+                    <td>
+                        ${
+                            paid
+                            ? formatMoney(paid)
+                            : "—"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            debt
+                            ? formatMoney(debt)
+                            : "—"
+                        }
+                    </td>
+
+                    <td class="${
+                        status.className
+                    }">
+
+                        ${status.text}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    const totalCharged =
+        months.length *
+        price;
+
+
+    return {
+
+        html: `
+
+            <div class="pdf-header">
+
+                <h1>
+                    KK TEMPO
+                </h1>
+
+                <h2>
+                    FINANSIJSKA KARTICA ČLANA
+                </h2>
+
+            </div>
+
+
+            <div class="pdf-member">
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        IME I PREZIME
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${escapeHTML(
+                            member.name || "-"
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        ŠIFRA ČLANA
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${escapeHTML(id)}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        PROGRAM
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${escapeHTML(
+                            member.program || "-"
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        MESEČNA ČLANARINA
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${formatMoney(price)}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        KARTICA ZAKLJUČNO SA
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${escapeHTML(
+                            monthLabel(
+                                selectedMonth
+                            )
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-info-box">
+
+                    <div class="pdf-info-label">
+                        EMAIL RODITELJA
+                    </div>
+
+                    <div class="pdf-info-value">
+
+                        ${escapeHTML(
+                            member.email || "-"
+                        )}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <table class="pdf-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>MESEC</th>
+
+                        <th>ZADUŽENJE</th>
+
+                        <th>UPLATA</th>
+
+                        <th>DUG</th>
+
+                        <th>STATUS</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${rows}
+
+                </tbody>
+
+            </table>
+
+
+            <div class="pdf-summary">
+
+                <div class="pdf-summary-box">
+
+                    <div class="pdf-summary-label">
+                        UKUPNO ZADUŽENO
+                    </div>
+
+                    <div class="pdf-summary-value">
+
+                        ${formatMoney(
+                            totalCharged
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-summary-box">
+
+                    <div class="pdf-summary-label">
+                        UKUPNO UPLAĆENO
+                    </div>
+
+                    <div class="pdf-summary-value">
+
+                        ${formatMoney(
+                            totalPaid
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="pdf-summary-box">
+
+                    <div class="pdf-summary-label">
+                        UKUPAN DUG
+                    </div>
+
+                    <div class="pdf-summary-value">
+
+                        ${formatMoney(
+                            totalDebt
+                        )}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="pdf-footer">
+
+                KK Tempo — Finansijska evidencija člana
+
+                <br>
+
+                Dokument generisan:
+                ${new Date().toLocaleDateString(
+                    "sr-Latn-RS"
+                )}
+
+            </div>
+
+        `,
+
+        totalDebt,
+
+        totalPaid,
+
+        totalCharged
+
+    };
+
+}
+
+
+/* =====================================================
+   GENERISANJE PDF-A
+===================================================== */
+
+async function createPDFBlob(
+    id
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        throw new Error(
+            "Član nije pronađen."
+        );
+
+    }
+
+
+    const selectedMonth =
+        document.getElementById(
+            "cardMonth"
+        ).value;
+
+
+    const data =
+        buildPDFHTML(
+            id,
+            member,
+            selectedMonth
+        );
+
+
+    const template =
+        document.getElementById(
+            "pdfTemplate"
+        );
+
+
+    template.innerHTML =
+        data.html;
+
+
+    /*
+       Sačekaj da browser prikaže HTML.
+    */
+
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                100
+            )
+    );
+
+
+    const canvas =
+        await html2canvas(
+            template,
+            {
+                scale:2,
+                useCORS:true,
+                backgroundColor:"#ffffff"
+            }
+        );
+
+
+    const imageData =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.95
+        );
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const pdf =
+        new jsPDF({
+            orientation:"portrait",
+            unit:"mm",
+            format:"a4"
+        });
+
+
+    const pageWidth =
+        pdf.internal.pageSize.getWidth();
+
+
+    const pageHeight =
+        pdf.internal.pageSize.getHeight();
+
+
+    const imageWidth =
+        pageWidth;
+
+
+    const imageHeight =
+        canvas.height *
+        imageWidth /
+        canvas.width;
+
+
+    let heightLeft =
+        imageHeight;
+
+
+    let position = 0;
+
+
+    pdf.addImage(
+        imageData,
+        "JPEG",
+        0,
+        position,
+        imageWidth,
+        imageHeight
+    );
+
+
+    heightLeft -=
+        pageHeight;
+
+
+    while(heightLeft > 0){
+
+        position =
+            heightLeft -
+            imageHeight;
+
+
+        pdf.addPage();
+
+
+        pdf.addImage(
+            imageData,
+            "JPEG",
+            0,
+            position,
+            imageWidth,
+            imageHeight
+        );
+
+
+        heightLeft -=
+            pageHeight;
+
+    }
+
+
+    const blob =
+        pdf.output(
+            "blob"
+        );
+
+
+    return {
+
+        blob,
+
+        pdf,
+
+        data,
+
+        selectedMonth
+
+    };
+
+}
+
+
+/* =====================================================
+   NAZIV PDF FAJLA
+===================================================== */
+
+function getPDFFileName(
+    id,
+    member,
+    selectedMonth
+){
+
+    const safeName =
+        String(
+            member.name || "Clan"
+        )
+        .replace(
+            /[^a-zA-Z0-9čćžšđČĆŽŠĐ\s-]/g,
+            ""
+        )
+        .trim()
+        .replace(
+            /\s+/g,
+            "_"
+        );
+
+
+    return (
+        "KK_Tempo_" +
+        safeName +
+        "_" +
+        selectedMonth +
+        ".pdf"
+    );
+
+}
+
+
+/* =====================================================
+   PREUZMI PDF
+===================================================== */
+
+async function generatePDF(
+    id
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+        alert(
+            "Član nije pronađen."
+        );
+        return;
+    }
+
+
+    showLoading(
+        "Priprema PDF-a...",
+        "Generiše se finansijska kartica za " +
+        (member.name || "člana") +
+        "."
+    );
+
+
+    try{
+
+        const result =
+            await createPDFBlob(
+                id
+            );
+
+
+        const selectedMonth =
+            result.selectedMonth;
+
+
+        const fileName =
+            getPDFFileName(
+                id,
+                member,
+                selectedMonth
+            );
+
+
+        result.pdf.save(
+            fileName
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        alert(
+            "Greška pri generisanju PDF-a."
+        );
+
+    }finally{
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* =====================================================
+   GENERIŠI SVE PDF KARTICE
+===================================================== */
+
+async function generateAllPDFs(){
+
+    const entries =
+        Object.entries(
+            members
+        );
+
+
+    if(entries.length === 0){
+
+        alert(
+            "Nema upisanih članova."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            "Da li želite da generišete PDF kartice za svih " +
+            entries.length +
+            " članova?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Generisanje kartica...",
+        "Molimo sačekajte. PDF kartice se generišu."
+    );
+
+
+    try{
+
+        for(
+            let i = 0;
+            i < entries.length;
+            i++
+        ){
+
+            const [
+                id,
+                member
+            ] =
+                entries[i];
+
+
+            updateLoading(
+                "Generisanje kartica...",
+                "Obrađeno " +
+                (i + 1) +
+                " od " +
+                entries.length +
+                ": " +
+                (member.name || "")
+            );
+
+
+            const result =
+                await createPDFBlob(
+                    id
+                );
+
+
+            const fileName =
+                getPDFFileName(
+                    id,
+                    member,
+                    result.selectedMonth
+                );
+
+
+            result.pdf.save(
+                fileName
+            );
+
+
+            /*
+               Mala pauza između fajlova
+               da browser ne blokira preuzimanja.
+            */
+
+            await sleep(300);
+
+        }
+
+
+        alert(
+            "PDF kartice su generisane za svih " +
+            entries.length +
+            " članova."
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        alert(
+            "Došlo je do greške pri generisanju kartica."
+        );
+
+    }finally{
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* =====================================================
+   BLOB → BASE64
+===================================================== */
+
+function blobToDataURL(blob){
+
+    return new Promise(
+        (
+            resolve,
+            reject
+        ) => {
+
+            const reader =
+                new FileReader();
+
+
+            reader.onloadend =
+                function(){
+
+                    resolve(
+                        reader.result
+                    );
+
+                };
+
+
+            reader.onerror =
+                reject;
+
+
+            reader.readAsDataURL(
+                blob
+            );
 
         }
     );
@@ -921,7 +2697,543 @@ function searchMembers(){
 
 
 /* =====================================================
-   OTVARANJE ANALITIKE
+   PROVERA EMAILJS PODEŠAVANJA
+===================================================== */
+
+function checkEmailJS(){
+
+    if(
+        EMAILJS_SERVICE_ID ===
+        "OVDE_UPISI_SERVICE_ID"
+    ){
+
+        alert(
+            "EmailJS još nije podešen.\n\n" +
+            "Potrebno je upisati SERVICE ID."
+        );
+
+        return false;
+
+    }
+
+
+    if(
+        EMAILJS_TEMPLATE_ID ===
+        "OVDE_UPISI_TEMPLATE_ID"
+    ){
+
+        alert(
+            "EmailJS još nije podešen.\n\n" +
+            "Potrebno je upisati TEMPLATE ID."
+        );
+
+        return false;
+
+    }
+
+
+    if(
+        typeof emailjs ===
+        "undefined"
+    ){
+
+        alert(
+            "EmailJS biblioteka nije učitana."
+        );
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =====================================================
+   SLANJE JEDNE KARTICE
+===================================================== */
+
+async function sendCard(
+    id
+){
+
+    const member =
+        members[id];
+
+
+    if(!member){
+
+        alert(
+            "Član nije pronađen."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !member.email ||
+        !String(member.email).includes("@")
+    ){
+
+        alert(
+            "Za člana " +
+            (member.name || "") +
+            " nije upisana ispravna email adresa."
+        );
+
+        return;
+
+    }
+
+
+    if(!checkEmailJS()){
+        return;
+    }
+
+
+    showLoading(
+        "Slanje finansijske kartice...",
+        "Priprema PDF-a i slanje na " +
+        member.email
+    );
+
+
+    try{
+
+        const result =
+            await createPDFBlob(
+                id
+            );
+
+
+        const base64 =
+            await blobToDataURL(
+                result.blob
+            );
+
+
+        const fileName =
+            getPDFFileName(
+                id,
+                member,
+                result.selectedMonth
+            );
+
+
+        const attachment = {
+
+            content:
+                base64,
+
+            filename:
+                fileName,
+
+            type:
+                "application/pdf"
+
+        };
+
+
+        const templateParams = {
+
+            to_email:
+                member.email,
+
+            email:
+                member.email,
+
+            recipient_email:
+                member.email,
+
+            name:
+                member.name || "",
+
+            member_name:
+                member.name || "",
+
+            member_code:
+                id,
+
+            month:
+                monthLabel(
+                    result.selectedMonth
+                ),
+
+            debt:
+                formatMoney(
+                    result.data.totalDebt
+                ),
+
+            paid:
+                formatMoney(
+                    result.data.totalPaid
+                ),
+
+            total:
+                formatMoney(
+                    result.data.totalCharged
+                ),
+
+            message:
+                "Poštovani, u prilogu se nalazi finansijska kartica člana " +
+                (member.name || "") +
+                " za " +
+                monthLabel(
+                    result.selectedMonth
+                ) +
+                ".",
+
+            attachment:
+                attachment
+
+        };
+
+
+        await emailjs.send(
+            EMAILJS_SERVICE_ID,
+            EMAILJS_TEMPLATE_ID,
+            templateParams
+        );
+
+
+        alert(
+            "Finansijska kartica za " +
+            (member.name || "") +
+            " uspešno je poslata na " +
+            member.email +
+            "."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "EmailJS greška:",
+            error
+        );
+
+
+        alert(
+            "Slanje nije uspelo.\n\n" +
+            "Proverite EmailJS podešavanja i Template."
+        );
+
+    }finally{
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* =====================================================
+   SLANJE SVIMA
+===================================================== */
+
+async function sendAllCards(){
+
+    const entries =
+        Object.entries(
+            members
+        );
+
+
+    if(entries.length === 0){
+
+        alert(
+            "Nema upisanih članova."
+        );
+
+        return;
+
+    }
+
+
+    if(!checkEmailJS()){
+        return;
+    }
+
+
+    const withEmail =
+        entries.filter(
+            ([id,member]) =>
+                member.email &&
+                String(
+                    member.email
+                ).includes("@")
+        );
+
+
+    const withoutEmail =
+        entries.filter(
+            ([id,member]) =>
+                !member.email ||
+                !String(
+                    member.email
+                ).includes("@")
+        );
+
+
+    if(withEmail.length === 0){
+
+        alert(
+            "Nijedan član nema ispravnu email adresu."
+        );
+
+        return;
+
+    }
+
+
+    let confirmationText =
+        "Biće poslato " +
+        withEmail.length +
+        " finansijskih kartica.\n\n";
+
+
+    if(withoutEmail.length > 0){
+
+        confirmationText +=
+            withoutEmail.length +
+            " članova nema ispravan email i biće preskočeno.\n\n";
+
+    }
+
+
+    confirmationText +=
+        "Da li želite da nastavite?";
+
+
+    if(
+        !confirm(
+            confirmationText
+        )
+    ){
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Slanje finansijskih kartica...",
+        "Molimo sačekajte."
+    );
+
+
+    let sent = 0;
+
+    let failed = 0;
+
+
+    try{
+
+        for(
+            let i = 0;
+            i < withEmail.length;
+            i++
+        ){
+
+            const [
+                id,
+                member
+            ] =
+                withEmail[i];
+
+
+            updateLoading(
+                "Slanje finansijskih kartica...",
+                "Šaljem " +
+                (i + 1) +
+                " od " +
+                withEmail.length +
+                ": " +
+                (member.name || "")
+            );
+
+
+            try{
+
+                const result =
+                    await createPDFBlob(
+                        id
+                    );
+
+
+                const base64 =
+                    await blobToDataURL(
+                        result.blob
+                    );
+
+
+                const fileName =
+                    getPDFFileName(
+                        id,
+                        member,
+                        result.selectedMonth
+                    );
+
+
+                const attachment = {
+
+                    content:
+                        base64,
+
+                    filename:
+                        fileName,
+
+                    type:
+                        "application/pdf"
+
+                };
+
+
+                const templateParams = {
+
+                    to_email:
+                        member.email,
+
+                    email:
+                        member.email,
+
+                    recipient_email:
+                        member.email,
+
+                    name:
+                        member.name || "",
+
+                    member_name:
+                        member.name || "",
+
+                    member_code:
+                        id,
+
+                    month:
+                        monthLabel(
+                            result.selectedMonth
+                        ),
+
+                    debt:
+                        formatMoney(
+                            result.data.totalDebt
+                        ),
+
+                    paid:
+                        formatMoney(
+                            result.data.totalPaid
+                        ),
+
+                    total:
+                        formatMoney(
+                            result.data.totalCharged
+                        ),
+
+                    message:
+                        "Poštovani, u prilogu se nalazi finansijska kartica člana " +
+                        (member.name || "") +
+                        " za " +
+                        monthLabel(
+                            result.selectedMonth
+                        ) +
+                        ".",
+
+                    attachment:
+                        attachment
+
+                };
+
+
+                await emailjs.send(
+                    EMAILJS_SERVICE_ID,
+                    EMAILJS_TEMPLATE_ID,
+                    templateParams
+                );
+
+
+                sent++;
+
+
+                /*
+                   EmailJS ima ograničenje
+                   od približno jednog zahteva u sekundi,
+                   zato pravimo pauzu.
+                */
+
+                await sleep(
+                    1100
+                );
+
+
+            }catch(error){
+
+                console.error(
+                    "Greška za:",
+                    member.name,
+                    error
+                );
+
+
+                failed++;
+
+            }
+
+        }
+
+
+        let resultText =
+            "Slanje završeno.\n\n" +
+            "Uspešno poslato: " +
+            sent;
+
+
+        if(failed > 0){
+
+            resultText +=
+                "\nNeuspešno: " +
+                failed;
+
+        }
+
+
+        if(withoutEmail.length > 0){
+
+            resultText +=
+                "\nBez email adrese: " +
+                withoutEmail.length;
+
+        }
+
+
+        alert(
+            resultText
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        alert(
+            "Došlo je do greške tokom slanja."
+        );
+
+    }finally{
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* =====================================================
+   ANALITIKA
 ===================================================== */
 
 function openAnalytics(id){
@@ -929,20 +3241,28 @@ function openAnalytics(id){
     const member =
         members[id];
 
+
     if(!member){
         return;
     }
 
 
     const months =
-        getFinancialMonths(member);
+        getFinancialMonths(
+            member
+        );
+
 
     const price =
-        Number(member.price) || 0;
+        Number(
+            member.price
+        ) || 0;
 
 
     let totalDebt = 0;
+
     let totalPaid = 0;
+
     let remainingDebt = 0;
 
 
@@ -956,12 +3276,16 @@ function openAnalytics(id){
                 );
 
 
-            totalDebt += price;
+            totalDebt +=
+                price;
 
 
-            if(record.status === "paid"){
+            if(
+                record.status === "paid"
+            ){
 
-                totalPaid += price;
+                totalPaid +=
+                    price;
 
             }
 
@@ -971,17 +3295,14 @@ function openAnalytics(id){
                 record.status !== "pause"
             ){
 
-                remainingDebt += price;
+                remainingDebt +=
+                    price;
 
             }
 
         }
     );
 
-
-    /* =================================================
-       KARTICA ČLANA
-    ================================================= */
 
     document.getElementById(
         "memberCard"
@@ -999,6 +3320,7 @@ function openAnalytics(id){
 
             </div>
 
+
             <div>
 
                 <div class="member-name">
@@ -1008,6 +3330,7 @@ function openAnalytics(id){
                     )}
 
                 </div>
+
 
                 <div class="member-info">
 
@@ -1042,10 +3365,6 @@ function openAnalytics(id){
 
     `;
 
-
-    /* =================================================
-       STATISTIKA
-    ================================================= */
 
     document.getElementById(
         "stats"
@@ -1119,10 +3438,6 @@ function openAnalytics(id){
     `;
 
 
-    /* =================================================
-       MESEČNI PREGLED
-    ================================================= */
-
     const monthsBox =
         document.getElementById(
             "months"
@@ -1134,8 +3449,11 @@ function openAnalytics(id){
         <div class="month-row month-head">
 
             <div>MESEC</div>
+
             <div>ZADUŽENJE</div>
+
             <div>UPLATA</div>
+
             <div>STATUS</div>
 
         </div>
@@ -1157,6 +3475,7 @@ function openAnalytics(id){
 
 
                 let paid = 0;
+
                 let statusText =
                     "NIJE PLAĆENO";
 
@@ -1168,7 +3487,8 @@ function openAnalytics(id){
                     record.status === "paid"
                 ){
 
-                    paid = price;
+                    paid =
+                        price;
 
                     statusText =
                         "PLAĆENO";
@@ -1265,12 +3585,15 @@ function openAnalytics(id){
 
     document.getElementById(
         "analytics"
-    ).classList.add("active");
+    ).classList.add(
+        "active"
+    );
 
 
     document.getElementById(
         "empty"
-    ).style.display = "none";
+    ).style.display =
+        "none";
 
 }
 
@@ -1283,12 +3606,15 @@ function hideAnalytics(){
 
     document.getElementById(
         "analytics"
-    ).classList.remove("active");
+    ).classList.remove(
+        "active"
+    );
 
 
     document.getElementById(
         "empty"
-    ).style.display = "block";
+    ).style.display =
+        "block";
 
 }
 
@@ -1305,9 +3631,175 @@ document.getElementById(
 );
 
 
+function searchMembers(){
+
+    const input =
+        document.getElementById(
+            "searchMember"
+        );
+
+
+    const text =
+        input.value
+            .trim()
+            .toLocaleLowerCase(
+                "sr"
+            );
+
+
+    const results =
+        document.getElementById(
+            "results"
+        );
+
+
+    results.innerHTML =
+        "";
+
+
+    if(!text){
+
+        hideAnalytics();
+
+        return;
+
+    }
+
+
+    const found =
+        Object.entries(
+            members
+        )
+        .filter(
+            ([id,member]) => {
+
+                const name =
+                    String(
+                        member.name || ""
+                    )
+                    .toLocaleLowerCase(
+                        "sr"
+                    );
+
+
+                const code =
+                    String(id)
+                    .toLocaleLowerCase(
+                        "sr"
+                    );
+
+
+                return (
+                    name.includes(text) ||
+                    code.includes(text)
+                );
+
+            }
+        )
+        .sort(
+            (a,b) =>
+                String(
+                    a[1].name || ""
+                ).localeCompare(
+                    String(
+                        b[1].name || ""
+                    ),
+                    "sr",
+                    {
+                        sensitivity:"base"
+                    }
+                )
+        );
+
+
+    if(found.length === 0){
+
+        results.innerHTML = `
+
+            <div class="no-results">
+
+                Nema člana koji odgovara pretrazi.
+
+            </div>
+
+        `;
+
+
+        hideAnalytics();
+
+        return;
+
+    }
+
+
+    found.forEach(
+        ([id,member]) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "result";
+
+
+            item.innerHTML = `
+
+                <div class="result-name">
+
+                    ${escapeHTML(
+                        member.name || "-"
+                    )}
+
+                </div>
+
+
+                <div class="result-info">
+
+                    Šifra:
+                    ${escapeHTML(id)}
+
+                    ${
+                        member.program
+                        ? " • " +
+                          escapeHTML(
+                              member.program
+                          )
+                        : ""
+                    }
+
+                </div>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                function(){
+
+                    openAnalytics(id);
+
+                    results.innerHTML =
+                        "";
+
+                }
+            );
+
+
+            results.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
 /* =====================================================
-   AUTOMATSKO OSVEŽAVANJE
-   ako se podaci promene u drugom tabu
+   STORAGE PROMENA
 ===================================================== */
 
 window.addEventListener(
@@ -1315,10 +3807,16 @@ window.addEventListener(
     function(event){
 
         if(
-            event.key === STORAGE_KEY
+            event.key ===
+            STORAGE_KEY
         ){
 
             loadData();
+
+            populateMonthSelect();
+
+            renderFinanceList();
+
 
             if(
                 document.getElementById(
@@ -1337,10 +3835,105 @@ window.addEventListener(
 
 
 /* =====================================================
+   LOADING
+===================================================== */
+
+function showLoading(
+    title,
+    text
+){
+
+    document.getElementById(
+        "loadingTitle"
+    ).textContent =
+        title;
+
+
+    document.getElementById(
+        "loadingText"
+    ).textContent =
+        text;
+
+
+    document.getElementById(
+        "loadingOverlay"
+    ).style.display =
+        "flex";
+
+}
+
+
+function updateLoading(
+    title,
+    text
+){
+
+    document.getElementById(
+        "loadingTitle"
+    ).textContent =
+        title;
+
+
+    document.getElementById(
+        "loadingText"
+    ).textContent =
+        text;
+
+}
+
+
+function hideLoading(){
+
+    document.getElementById(
+        "loadingOverlay"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   SLEEP
+===================================================== */
+
+function sleep(ms){
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+
+}
+
+
+/* =====================================================
+   PROMENA MESECA
+===================================================== */
+
+document.getElementById(
+    "cardMonth"
+).addEventListener(
+    "change",
+    function(){
+
+        renderFinanceList();
+
+    }
+);
+
+
+/* =====================================================
    START
 ===================================================== */
 
 loadData();
+
+populateMonthSelect();
+
+renderFinanceList();
 
 </script>
 
