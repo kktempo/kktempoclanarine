@@ -665,6 +665,253 @@ span,
     }
 }
 
+/* =========================================
+   NOVI PROZOR ZA PORUKU
+   ========================================= */
+
+#porukaNoviProzor {
+    position: fixed !important;
+    z-index: 9999999 !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    background: rgba(0,0,0,0.75);
+
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+}
+
+
+.poruka-novi-prozor {
+
+    width: 100%;
+    max-width: 600px;
+
+    max-height: 90vh;
+
+    background: white;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.5);
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+
+.poruka-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 16px 18px;
+
+    background: #f5f5f5;
+
+    border-bottom: 1px solid #ddd;
+
+    font-size: 18px;
+
+}
+
+
+.dugme-x {
+
+    width: 40px;
+    height: 40px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #e53935;
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+.poruka-sadrzaj {
+
+    padding: 18px;
+
+    overflow-y: auto;
+
+}
+
+
+#novaPorukaTekst {
+
+    width: 100%;
+
+    min-height: 300px;
+
+    padding: 15px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #ccc;
+
+    border-radius: 10px;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    resize: vertical;
+
+}
+
+
+.nova-poruka-dugmad {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+
+.nova-poruka-dugmad button,
+.nova-poruka-dugmad a {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    box-sizing: border-box;
+
+    border: none;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+.dugme-kopiraj {
+
+    background: #444;
+
+    color: white;
+
+}
+
+
+.dugme-viber {
+
+    background: #665cac;
+
+    color: white;
+
+}
+
+
+.dugme-zatvori {
+
+    background: #ddd;
+
+    color: #222;
+
+}
+
+
+.nema-broja {
+
+    padding: 12px;
+
+    background: #fff3cd;
+
+    color: #856404;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+}
+
+
+@media (max-width: 600px) {
+
+    #porukaNoviProzor {
+
+        padding: 8px;
+
+    }
+
+
+    .poruka-novi-prozor {
+
+        width: 100%;
+
+        max-height: 94vh;
+
+        border-radius: 14px;
+
+    }
+
+
+    .poruka-header {
+
+        font-size: 17px;
+
+        padding: 13px 15px;
+
+    }
+
+
+    #novaPorukaTekst {
+
+        min-height: 250px;
+
+        font-size: 16px;
+
+    }
+
+}
+
 .prikazi-poruku-dugme {
     display: inline-block;
     margin-top: 10px;

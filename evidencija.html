@@ -1230,204 +1230,142 @@ function otvoriPorukuOdsustva(index){
         return;
     }
 
-    let prozor = window.open("", "_blank");
+    let stariProzor =
+        document.getElementById("porukaNoviProzor");
 
-    if(!prozor){
-        alert("Telefon ili browser je blokirao otvaranje novog prozora.");
-        return;
+    if(stariProzor){
+        stariProzor.remove();
     }
 
-    let porukaSigurna = podatak.poruka
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 
-    let viberDugme = "";
+    let prozor = document.createElement("div");
 
-    if(podatak.viberLink){
+    prozor.id = "porukaNoviProzor";
 
-        viberDugme = `
-            <a
-                href="${podatak.viberLink}"
-                class="viber"
-            >
-                📱 POŠALJI NA VIBER
-            </a>
-        `;
+    prozor.innerHTML = `
 
-    }
+        <div class="poruka-novi-prozor">
 
-    prozor.document.write(`
-        <!DOCTYPE html>
-        <html lang="sr">
-        <head>
+            <div class="poruka-header">
 
-            <meta charset="UTF-8">
+                <strong>✉️ Poruka roditelju</strong>
 
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-            >
+                <button
+                    type="button"
+                    onclick="zatvoriNoviProzorPoruke()"
+                    class="dugme-x"
+                >
+                    ✕
+                </button>
 
-            <title>Poruka roditelju</title>
+            </div>
 
-            <style>
 
-                * {
-                    box-sizing: border-box;
-                }
+            <div class="poruka-sadrzaj">
 
-                body {
-                    margin: 0;
-                    padding: 20px;
-                    background: #f2f2f2;
-                    font-family: Arial, sans-serif;
-                }
+                <textarea
+                    id="novaPorukaTekst"
+                >${podatak.poruka}</textarea>
 
-                .prozor {
-                    width: 100%;
-                    max-width: 650px;
-                    margin: 0 auto;
-                    background: white;
-                    border-radius: 16px;
-                    padding: 20px;
-                    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
-                }
 
-                h2 {
-                    margin-top: 0;
-                    text-align: center;
-                }
-
-                textarea {
-                    width: 100%;
-                    min-height: 350px;
-                    padding: 15px;
-                    font-size: 16px;
-                    line-height: 1.5;
-                    border: 1px solid #ccc;
-                    border-radius: 10px;
-                    resize: vertical;
-                    font-family: Arial, sans-serif;
-                }
-
-                .dugmad {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    margin-top: 15px;
-                }
-
-                button,
-                a {
-                    width: 100%;
-                    padding: 14px;
-                    border: none;
-                    border-radius: 10px;
-                    text-align: center;
-                    text-decoration: none;
-                    font-size: 16px;
-                    font-weight: bold;
-                    cursor: pointer;
-                }
-
-                .kopiraj {
-                    background: #444;
-                    color: white;
-                }
-
-                .viber {
-                    background: #665cac;
-                    color: white;
-                }
-
-                .zatvori {
-                    background: #ddd;
-                    color: #222;
-                }
-
-            </style>
-
-        </head>
-
-        <body>
-
-            <div class="prozor">
-
-                <h2>
-                    ✉️ Poruka roditelju
-                </h2>
-
-                <textarea id="poruka">${porukaSigurna}</textarea>
-
-                <div class="dugmad">
+                <div class="nova-poruka-dugmad">
 
                     <button
-                        class="kopiraj"
-                        onclick="kopiraj()"
+                        type="button"
+                        onclick="kopirajNovuPoruku()"
+                        class="dugme-kopiraj"
                     >
                         📋 KOPIRAJ PORUKU
                     </button>
 
-                    ${viberDugme}
+
+                    ${
+                        podatak.viberLink
+                        ?
+                        `
+                        <a
+                            href="${podatak.viberLink}"
+                            class="dugme-viber"
+                        >
+                            📱 POŠALJI NA VIBER
+                        </a>
+                        `
+                        :
+                        `
+                        <div class="nema-broja">
+                            ⚠️ Nije unet broj telefona roditelja.
+                        </div>
+                        `
+                    }
+
 
                     <button
-                        class="zatvori"
-                        onclick="window.close()"
+                        type="button"
+                        onclick="zatvoriNoviProzorPoruke()"
+                        class="dugme-zatvori"
                     >
-                        ✕ ZATVORI PROZOR
+                        ✕ ZATVORI
                     </button>
 
                 </div>
 
             </div>
 
+        </div>
 
-            <script>
+    `;
 
-                function kopiraj(){
 
-                    let tekst =
-                        document.getElementById("poruka");
+    document.body.appendChild(prozor);
 
-                    navigator.clipboard.writeText(tekst.value)
-                        .then(function(){
+    document.body.style.overflow = "hidden";
 
-                            let dugme =
-                                document.querySelector(".kopiraj");
+}
 
-                            dugme.innerHTML =
-                                "✅ PORUKA JE KOPIRANA";
 
-                            setTimeout(function(){
+/* ZATVARANJE PROZORA */
 
-                                dugme.innerHTML =
-                                    "📋 KOPIRAJ PORUKU";
+function zatvoriNoviProzorPoruke(){
 
-                            }, 2000);
+    let prozor =
+        document.getElementById("porukaNoviProzor");
 
-                        })
-                        .catch(function(){
+    if(prozor){
+        prozor.remove();
+    }
 
-                            tekst.select();
+    document.body.style.overflow = "";
 
-                            document.execCommand("copy");
+}
 
-                            alert("Poruka je kopirana.");
 
-                        });
+/* KOPIRANJE PORUKE */
 
-                }
+function kopirajNovuPoruku(){
 
-            <\/script>
+    let tekst =
+        document.getElementById("novaPorukaTekst");
 
-        </body>
-        </html>
-    `);
+    if(!tekst){
+        return;
+    }
 
-    prozor.document.close();
+
+    navigator.clipboard.writeText(tekst.value)
+        .then(function(){
+
+            alert("Poruka je kopirana.");
+
+        })
+        .catch(function(){
+
+            tekst.select();
+
+            document.execCommand("copy");
+
+            alert("Poruka je kopirana.");
+
+        });
 
 }
 
