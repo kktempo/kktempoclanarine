@@ -1208,6 +1208,13 @@ function proveriTriUzastopnaOdsustva(){
 
         document.body.appendChild(overlay);
 
+overlay.style.position = "fixed";
+overlay.style.left = "0";
+overlay.style.top = "0";
+overlay.style.width = "100vw";
+overlay.style.height = "100vh";
+overlay.style.zIndex = "999999";
+
     }
 
 }
@@ -1253,6 +1260,7 @@ function otvoriPorukuOdsustva(index){
 
 
     overlay.style.display = "flex";
+document.body.style.overflow = "hidden";
 
 }
 
@@ -1267,6 +1275,7 @@ function zatvoriPorukuOdsustva(){
     if(overlay){
 
         overlay.style.display = "none";
+document.body.style.overflow = "";
 
     }
 

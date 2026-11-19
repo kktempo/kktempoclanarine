@@ -549,3 +549,152 @@ span,
     border-radius: 8px;
     font-weight: bold;
 }
+
+/* PROZOR SA PORUKOM */
+.poruka-overlay {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.poruka-overlay {
+    display: none;
+    position: fixed !important;
+    z-index: 999999 !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.70);
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.poruka-prozor {
+    background: white;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    position: relative;
+    margin: auto;
+}
+
+.poruka-prozor h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.poruka-tekst {
+    width: 100%;
+    min-height: 250px;
+    max-height: 50vh;
+    resize: vertical;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    font-family: Arial, sans-serif;
+}
+
+.poruka-dugmad {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.poruka-dugmad button,
+.poruka-dugmad a {
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+
+    .poruka-overlay {
+        padding: 10px !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .poruka-prozor {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92vh !important;
+        border-radius: 14px !important;
+        padding: 16px !important;
+    }
+
+    .poruka-tekst {
+        min-height: 220px;
+        max-height: 45vh;
+        font-size: 16px;
+    }
+
+    .poruka-dugmad {
+        flex-direction: column;
+    }
+
+    .poruka-dugmad button,
+    .poruka-dugmad a {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+}
+
+.prikazi-poruku-dugme {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #444;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.posalji-viber-poruku {
+    display: inline-block;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #665cac;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.zatvori-poruku {
+    padding: 11px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #ddd;
+    color: #222;
+    cursor: pointer;
+    font-weight: bold;
+}
