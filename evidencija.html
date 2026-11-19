@@ -39,6 +39,8 @@
 
 <div id="rezultatPretrage"></div>
 
+<div id="upozorenjaPrisustvo"></div>
+
 <select id="grupa" onchange="ucitajGrupu()">
 
 <option value="mini">GRUPA 1</option>
@@ -259,6 +261,8 @@ function sacuvaj(){
     }
 
     alert("Evidencija sačuvana.");
+
+proveriTriUzastopnaOdsustva();
 
 }
 
@@ -621,6 +625,185 @@ function pretraziIgraca(){
 
     rezultat.innerHTML = html;
 
+}
+
+function proveriTriUzastopnaOdsustva(){
+
+    let upozorenja = document.getElementById("upozorenjaPrisustvo");
+
+    let lista = JSON.parse(
+        localStorage.getItem("listaEvidencija")
+    ) || [];
+
+    upozorenja.innerHTML = "";
+
+    if(lista.length === 0){
+        return;
+    }
+
+    let upozorenjaLista = [];
+
+    /*
+        Prolazimo kroz svaku grupu
+    */
+
+    for(let grupa in grupe){
+
+        /*
+            Uzimamo samo evidencije za tu grupu
+            i sortiramo ih od najnovije ka najstarijoj
+        */
+
+        let evidencijeGrupe = lista
+            .filter(e => e.grupa === grupa)
+            .sort((a,b) => {
+                return new Date(b.datum) - new Date(a.datum);
+            });
+
+        /*
+            Proveravamo svakog igrača
+        */
+
+        grupe[grupa].forEach(ime => {
+
+            let poslednjaTri = [];
+
+            for(let evidencija of evidencijeGrupe){
+
+                let kljuc =
+                    "evidencija_" +
+                    evidencija.grupa +
+                    "_" +
+                    evidencija.datum;
+
+                let podaci =
+                    JSON.parse(localStorage.getItem(kljuc));
+
+                if(!podaci){
+                    continue;
+                }
+
+                /*
+                    Uzimamo samo treninge gde je igrač
+                    imao evidentiran status
+                */
+
+                if(
+                    podaci[ime] === "Prisutan" ||
+                    podaci[ime] === "Nije prisutan"
+                ){
+
+                    poslednjaTri.push({
+                        datum: evidencija.datum,
+                        status: podaci[ime]
+                    });
+
+                }
+
+                /*
+                    Dovoljna su nam poslednja 3 treninga
+                */
+
+                if(poslednjaTri.length === 3){
+                    break;
+                }
+
+            }
+
+            /*
+                Ako postoje poslednja 3 treninga
+                i sva tri su "Nije prisutan"
+            */
+
+            if(
+                poslednjaTri.length === 3 &&
+                poslednjaTri.every(
+                    x => x.status === "Nije prisutan"
+                )
+            ){
+
+                upozorenjaLista.push({
+                    ime: ime,
+                    grupa: grupa,
+                    treninzi: poslednjaTri
+                });
+
+            }
+
+        });
+
+    }
+
+    /*
+        Ako nema upozorenja
+    */
+
+    if(upozorenjaLista.length === 0){
+
+        upozorenja.innerHTML = `
+            <div class="nema-upozorenja">
+                ✓ Nema igrača sa 3 uzastopna odsustva.
+            </div>
+        `;
+
+        return;
+
+    }
+
+    /*
+        Prikaz upozorenja
+    */
+
+    let html = `
+        <div class="upozorenja-naslov">
+            ⚠️ UPOZORENJE — 3 UZASTOPNA ODSUSTVA
+        </div>
+    `;
+
+    upozorenjaLista.forEach(igrac => {
+
+        let nazivGrupe =
+            igrac.grupa === "mini"
+            ? "GRUPA 1"
+            : igrac.grupa === "mladji"
+            ? "GRUPA 2"
+            : "GRUPA 3";
+
+        html += `
+            <div class="upozorenje-igrac">
+
+                <strong>${igrac.ime}</strong>
+
+                <span>${nazivGrupe}</span>
+
+                <small>
+                    Nije prisutan poslednja 3 treninga
+                </small>
+
+                <div class="datumi-odsustva">
+                    ${igrac.treninzi
+                        .map(t => formatirajDatum(t.datum))
+                        .join(" • ")}
+                </div>
+
+            </div>
+        `;
+
+    });
+
+    upozorenja.innerHTML = html;
+
+}
+
+function formatirajDatum(datum){
+
+    if(!datum) return "";
+
+    let delovi = datum.split("-");
+
+    return delovi[2] + "." +
+           delovi[1] + "." +
+           delovi[0] + ".";
 }
 
 </script>
