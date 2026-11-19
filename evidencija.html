@@ -841,31 +841,24 @@ function proveriTriUzastopnaOdsustva(){
 
     let upozorenjaLista = [];
 
-    /*
-        Prolazimo kroz svaku grupu
-    */
-
+    // PROLAZIMO KROZ SVE GRUPE
     for(let grupa in grupe){
 
-        /*
-            Uzimamo samo evidencije za tu grupu
-            i sortiramo ih od najnovije ka najstarijoj
-        */
-
+        // Uzimamo evidencije samo za ovu grupu
+        // i sortiramo ih od najnovije ka najstarijoj
         let evidencijeGrupe = lista
             .filter(e => e.grupa === grupa)
             .sort((a,b) => {
                 return new Date(b.datum) - new Date(a.datum);
             });
 
-        /*
-            Proveravamo svakog igrača
-        */
-
+        // PROVERAVAMO SVAKOG IGRAČA
         grupe[grupa].forEach(ime => {
 
             let poslednjaTri = [];
 
+            // Uzimamo poslednja 3 treninga na kojima
+            // je igrač imao evidentiran status
             for(let evidencija of evidencijeGrupe){
 
                 let kljuc =
@@ -881,11 +874,6 @@ function proveriTriUzastopnaOdsustva(){
                     continue;
                 }
 
-                /*
-                    Uzimamo samo treninge gde je igrač
-                    imao evidentiran status
-                */
-
                 if(
                     podaci[ime] === "Prisutan" ||
                     podaci[ime] === "Nije prisutan"
@@ -898,21 +886,14 @@ function proveriTriUzastopnaOdsustva(){
 
                 }
 
-                /*
-                    Dovoljna su nam poslednja 3 treninga
-                */
-
+                // Dovoljna su poslednja 3 treninga
                 if(poslednjaTri.length === 3){
                     break;
                 }
 
             }
 
-            /*
-                Ako postoje poslednja 3 treninga
-                i sva tri su "Nije prisutan"
-            */
-
+            // AKO SU SVA TRI POSLEDNJA TRENINGA ODSUSTVO
             if(
                 poslednjaTri.length === 3 &&
                 poslednjaTri.every(
@@ -932,10 +913,7 @@ function proveriTriUzastopnaOdsustva(){
 
     }
 
-    /*
-        Ako nema upozorenja
-    */
-
+    // AKO NEMA UPOZORENJA
     if(upozorenjaLista.length === 0){
 
         upozorenja.innerHTML = `
@@ -945,19 +923,16 @@ function proveriTriUzastopnaOdsustva(){
         `;
 
         return;
-
     }
 
-    /*
-        Prikaz upozorenja
-    */
-
+    // NASLOV UPOZORENJA
     let html = `
         <div class="upozorenja-naslov">
             ⚠️ UPOZORENJE — 3 UZASTOPNA ODSUSTVA
         </div>
     `;
 
+    // PRIKAZ SVAKOG IGRAČA
     upozorenjaLista.forEach(igrac => {
 
         let nazivGrupe =
@@ -967,113 +942,104 @@ function proveriTriUzastopnaOdsustva(){
             ? "GRUPA 2"
             : "GRUPA 3";
 
-let roditelj = roditelji[igrac.ime];
+        let roditelj = roditelji[igrac.ime];
 
-let viberDugme = "";
+        let viberDugme = "";
 
-if(roditelj && roditelj.telefon){
+        // AKO POSTOJI BROJ TELEFONA
+        if(roditelj && roditelj.telefon){
 
-    let broj = roditelj.telefon
-        .replace(/\s+/g, "")
-        .replace(/-/g, "")
-        .replace(/\(/g, "")
-        .replace(/\)/g, "");
+            let broj = roditelj.telefon
+                .replace(/\s+/g, "")
+                .replace(/-/g, "")
+                .replace(/\(/g, "")
+                .replace(/\)/g, "");
 
-    // Ako je broj unet kao 06...
-    if(broj.startsWith("06")){
-        broj = "+381" + broj.substring(1);
-    }
+            // 06xxxxxxxx -> +3816xxxxxxxx
+            if(broj.startsWith("06")){
+                broj = "+381" + broj.substring(1);
+            }
 
-    // Ako je broj unet bez +381
-    if(broj.startsWith("381")){
-        broj = "+" + broj;
-    }
+            // 3816xxxxxxxx -> +3816xxxxxxxx
+            if(broj.startsWith("381")){
+                broj = "+" + broj;
+            }
 
-    let poruka =
-        "Poštovani " +
-        (roditelj.imeRoditelja || "") +
-        ",\n\n" +
+            let poruka =
+                "Poštovani " +
+                (roditelj.imeRoditelja || "") +
+                ",\n\n" +
 
-        "obaveštavamo Vas da Vaše dete " +
-        igrac.ime +
-        " nije prisustvovalo poslednja tri treninga.\n\n" +
+                "obaveštavamo Vas da Vaše dete " +
+                igrac.ime +
+                " nije prisustvovalo poslednja tri treninga.\n\n" +
 
-        "Datumi odsustva: " +
-        igrac.treninzi
-            .map(t => formatirajDatum(t.datum))
-            .join(", ") +
-        ".\n\n" +
+                "Datumi odsustva: " +
+                igrac.treninzi
+                    .map(t => formatirajDatum(t.datum))
+                    .join(", ") +
+                ".\n\n" +
 
-        "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva.\n\n" +
+                "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva.\n\n" +
 
-        "Hvala na razumevanju.\n" +
-        "KK TEMPO BRATUNAC";
+                "Hvala na razumevanju.\n" +
+                "KK TEMPO BRATUNAC";
 
-    let viberPoruka = encodeURIComponent(poruka);
+            let viberLink =
+                "viber://chat?number=" +
+                encodeURIComponent(broj) +
+                "&text=" +
+                encodeURIComponent(poruka);
 
-    let viberLink =
-        "viber://chat?number=" +
-        encodeURIComponent(broj) +
-        "&text=" +
-        viberPoruka;
+            viberDugme = `
+                <a href="${viberLink}" class="viber-dugme">
+                    📱 POŠALJI VIBER
+                </a>
+            `;
 
-    viberDugme = `
-        <a href="${viberLink}" class="viber-dugme">
-            📱 POŠALJI VIBER
-        </a>
-    `;
+        }else{
 
-}else{
-
-    viberDugme = `
-        <div class="nema-telefona">
-            ⚠️ Nije unet broj telefona roditelja.
-        </div>
-    `;
-}
-
-    viberDugme = `
-        <div class="nema-telefona">
-            ⚠️ Nije unet broj telefona roditelja.
-        </div>
-    `;
-
-}
-
-
-html += `
-    <div class="upozorenje-igrac">
-
-        <strong>${igrac.ime}</strong>
-
-        <span>${nazivGrupe}</span>
-
-        <small>
-            Nije prisutan poslednja 3 treninga
-        </small>
-
-        <div class="datumi-odsustva">
-            ${igrac.treninzi
-                .map(t => formatirajDatum(t.datum))
-                .join(" • ")}
-        </div>
-
-        ${
-            roditelj
-            ? `
-                <div class="podaci-roditelja">
-                    👤 ${roditelj.imeRoditelja}
-                    <br>
-                    📞 ${roditelj.telefon}
+            viberDugme = `
+                <div class="nema-telefona">
+                    ⚠️ Nije unet broj telefona roditelja.
                 </div>
-            `
-            : ""
+            `;
+
         }
 
-        ${viberDugme}
+        html += `
+            <div class="upozorenje-igrac">
 
-    </div>
-`;
+                <strong>${igrac.ime}</strong>
+
+                <span>${nazivGrupe}</span>
+
+                <small>
+                    Nije prisutan poslednja 3 treninga
+                </small>
+
+                <div class="datumi-odsustva">
+                    ${igrac.treninzi
+                        .map(t => formatirajDatum(t.datum))
+                        .join(" • ")}
+                </div>
+
+                ${
+                    roditelj
+                    ? `
+                        <div class="podaci-roditelja">
+                            👤 ${roditelj.imeRoditelja}
+                            <br>
+                            📞 ${roditelj.telefon}
+                        </div>
+                    `
+                    : ""
+                }
+
+                ${viberDugme}
+
+            </div>
+        `;
 
     });
 
@@ -1091,6 +1057,8 @@ function formatirajDatum(datum){
            delovi[1] + "." +
            delovi[0] + ".";
 }
+
+proveriTriUzastopnaOdsustva();
 
 </script>
 
