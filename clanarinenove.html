@@ -639,33 +639,41 @@ main{
         </div>
     </button>
 
-    <div class="glavni-meni-lista">
+<div class="glavni-meni-lista">
 
-        <button
-            class="glavni-meni-stavka aktivna"
-            data-sekcija="finansije"
-            type="button"
-        >
-            FINANSIJE
-        </button>
+    <button
+        class="glavni-meni-stavka aktivna"
+        data-sekcija="finansije"
+        type="button"
+    >
+        FINANSIJE
+    </button>
 
-        <button
-            class="glavni-meni-stavka"
-            data-sekcija="kontakt"
-            type="button"
-        >
-            KONTAKT PODACI
-        </button>
+    <button
+        class="glavni-meni-stavka"
+        data-sekcija="evidencija"
+        type="button"
+    >
+        EVIDENCIJA
+    </button>
 
-        <button
-            class="glavni-meni-stavka"
-            data-sekcija="ai"
-            type="button"
-        >
-            AI SISTEM
-        </button>
+    <button
+        class="glavni-meni-stavka"
+        data-sekcija="kontakt"
+        type="button"
+    >
+        KONTAKT PODACI
+    </button>
 
-    </div>
+    <button
+        class="glavni-meni-stavka"
+        data-sekcija="ai"
+        type="button"
+    >
+        AI SISTEM
+    </button>
+
+</div>
 
 </div>
 <header>
@@ -3011,6 +3019,11 @@ document.querySelectorAll(".glavni-meni-stavka").forEach(function(stavka) {
             window.location.href = "finansije.html";
             return;
         }
+
+if(sekcija === "evidencija"){
+    window.location.href = "evidencija.html";
+    return;
+}
 
         document.querySelectorAll(".glavni-meni-stavka")
             .forEach(function(item) {
