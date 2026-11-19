@@ -825,6 +825,9 @@ function pretraziIgraca(){
 
 }
 
+let porukeOdsustva = [];
+
+
 function proveriTriUzastopnaOdsustva(){
 
     let upozorenja = document.getElementById("upozorenjaPrisustvo");
@@ -835,30 +838,33 @@ function proveriTriUzastopnaOdsustva(){
 
     upozorenja.innerHTML = "";
 
+    porukeOdsustva = [];
+
     if(lista.length === 0){
         return;
     }
 
     let upozorenjaLista = [];
 
-    // PROLAZIMO KROZ SVE GRUPE
+
+    /* PROLAZIMO KROZ SVAKU GRUPU */
+
     for(let grupa in grupe){
 
-        // Uzimamo evidencije samo za ovu grupu
-        // i sortiramo ih od najnovije ka najstarijoj
         let evidencijeGrupe = lista
             .filter(e => e.grupa === grupa)
             .sort((a,b) => {
                 return new Date(b.datum) - new Date(a.datum);
             });
 
-        // PROVERAVAMO SVAKOG IGRAČA
+
+        /* PROVERA SVAKOG IGRAČA */
+
         grupe[grupa].forEach(ime => {
 
             let poslednjaTri = [];
 
-            // Uzimamo poslednja 3 treninga na kojima
-            // je igrač imao evidentiran status
+
             for(let evidencija of evidencijeGrupe){
 
                 let kljuc =
@@ -874,6 +880,9 @@ function proveriTriUzastopnaOdsustva(){
                     continue;
                 }
 
+
+                /* UZIMAMO SAMO EVIDENTIRANE TRENINGE */
+
                 if(
                     podaci[ime] === "Prisutan" ||
                     podaci[ime] === "Nije prisutan"
@@ -886,14 +895,16 @@ function proveriTriUzastopnaOdsustva(){
 
                 }
 
-                // Dovoljna su poslednja 3 treninga
+
                 if(poslednjaTri.length === 3){
                     break;
                 }
 
             }
 
-            // AKO SU SVA TRI POSLEDNJA TRENINGA ODSUSTVO
+
+            /* AKO SU SVA TRI POSLEDNJA TRENINGA ODSUSTVO */
+
             if(
                 poslednjaTri.length === 3 &&
                 poslednjaTri.every(
@@ -913,7 +924,9 @@ function proveriTriUzastopnaOdsustva(){
 
     }
 
-    // AKO NEMA UPOZORENJA
+
+    /* AKO NEMA UPOZORENJA */
+
     if(upozorenjaLista.length === 0){
 
         upozorenja.innerHTML = `
@@ -923,17 +936,22 @@ function proveriTriUzastopnaOdsustva(){
         `;
 
         return;
+
     }
 
-    // NASLOV UPOZORENJA
+
+    /* NASLOV */
+
     let html = `
         <div class="upozorenja-naslov">
             ⚠️ UPOZORENJE — 3 UZASTOPNA ODSUSTVA
         </div>
     `;
 
-    // PRIKAZ SVAKOG IGRAČA
-    upozorenjaLista.forEach(igrac => {
+
+    /* SVAKI IGRAČ */
+
+    upozorenjaLista.forEach((igrac, index) => {
 
         let nazivGrupe =
             igrac.grupa === "mini"
@@ -942,57 +960,112 @@ function proveriTriUzastopnaOdsustva(){
             ? "GRUPA 2"
             : "GRUPA 3";
 
+
         let roditelj = roditelji[igrac.ime];
 
-        let viberDugme = "";
 
-        // AKO POSTOJI BROJ TELEFONA
+        /* DATUMI */
+
+        let datumi = igrac.treninzi
+            .map(t => formatirajDatum(t.datum));
+
+
+        /* IME RODITELJA */
+
+        let imeRoditelja =
+            roditelj && roditelj.imeRoditelja
+            ? roditelj.imeRoditelja
+            : "";
+
+
+        /* BROJ TELEFONA */
+
+        let broj = "";
+
         if(roditelj && roditelj.telefon){
 
-            let broj = roditelj.telefon
+            broj = roditelj.telefon
                 .replace(/\s+/g, "")
                 .replace(/-/g, "")
                 .replace(/\(/g, "")
                 .replace(/\)/g, "");
 
-            // 06xxxxxxxx -> +3816xxxxxxxx
+
             if(broj.startsWith("06")){
                 broj = "+381" + broj.substring(1);
             }
 
-            // 3816xxxxxxxx -> +3816xxxxxxxx
+
             if(broj.startsWith("381")){
                 broj = "+" + broj;
             }
 
-            let poruka =
-                "Poštovani " +
-                (roditelj.imeRoditelja || "") +
-                ",\n\n" +
+        }
 
-                "obaveštavamo Vas da Vaše dete " +
-                igrac.ime +
-                " nije prisustvovalo poslednja tri treninga.\n\n" +
 
-                "Datumi odsustva: " +
-                igrac.treninzi
-                    .map(t => formatirajDatum(t.datum))
-                    .join(", ") +
-                ".\n\n" +
+        /* PORUKA ZA RODITELJA */
 
-                "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva.\n\n" +
+        let poruka =
 
-                "Hvala na razumevanju.\n" +
-                "KK TEMPO BRATUNAC";
+            "Poštovani " +
+            (imeRoditelja || "roditelji") +
+            ",\n\n" +
 
-            let viberLink =
+            "obaveštavamo Vas da Vaše dete " +
+            igrac.ime +
+            " nije prisustvovalo poslednja tri treninga.\n\n" +
+
+            "Datumi odsustva:\n" +
+
+            datumi
+                .map(d => "• " + d)
+                .join("\n") +
+
+            "\n\n" +
+
+            "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva, kako bismo imali informaciju o situaciji.\n\n" +
+
+            "Hvala na razumevanju.\n\n" +
+
+            "KK TEMPO BRATUNAC";
+
+
+        /* VIBER LINK */
+
+        let viberLink = "";
+
+        if(broj){
+
+            viberLink =
                 "viber://chat?number=" +
                 encodeURIComponent(broj) +
                 "&text=" +
                 encodeURIComponent(poruka);
 
+        }
+
+
+        /* ČUVAMO PORUKU ZA OVAJ RED */
+
+        porukeOdsustva.push({
+            poruka: poruka,
+            viberLink: viberLink,
+            dete: igrac.ime,
+            roditelj: imeRoditelja
+        });
+
+
+        /* VIBER DUGME */
+
+        let viberDugme = "";
+
+        if(viberLink){
+
             viberDugme = `
-                <a href="${viberLink}" class="viber-dugme">
+                <a
+                    href="${viberLink}"
+                    class="viber-dugme"
+                >
                     📱 POŠALJI VIBER
                 </a>
             `;
@@ -1007,7 +1080,11 @@ function proveriTriUzastopnaOdsustva(){
 
         }
 
+
+        /* HTML UPOZORENJA */
+
         html += `
+
             <div class="upozorenje-igrac">
 
                 <strong>${igrac.ime}</strong>
@@ -1018,32 +1095,226 @@ function proveriTriUzastopnaOdsustva(){
                     Nije prisutan poslednja 3 treninga
                 </small>
 
+
                 <div class="datumi-odsustva">
-                    ${igrac.treninzi
-                        .map(t => formatirajDatum(t.datum))
-                        .join(" • ")}
+
+                    ${datumi.join(" • ")}
+
                 </div>
+
 
                 ${
                     roditelj
-                    ? `
-                        <div class="podaci-roditelja">
-                            👤 ${roditelj.imeRoditelja}
-                            <br>
-                            📞 ${roditelj.telefon}
-                        </div>
+                    ?
                     `
-                    : ""
+                    <div class="podaci-roditelja">
+
+                        👤 ${roditelj.imeRoditelja}
+
+                        <br>
+
+                        📞 ${roditelj.telefon}
+
+                    </div>
+                    `
+                    :
+                    ""
                 }
+
+
+                <div>
+
+                    <button
+                        type="button"
+                        class="prikazi-poruku-dugme"
+                        onclick="otvoriPorukuOdsustva(${index})"
+                    >
+                        ✉️ PRIKAŽI PORUKU
+                    </button>
+
+                </div>
+
 
                 ${viberDugme}
 
             </div>
+
         `;
 
     });
 
+
     upozorenja.innerHTML = html;
+
+
+    /* DODAJEMO PROZOR ZA PORUKU AKO NE POSTOJI */
+
+    if(!document.getElementById("porukaOdsustvaOverlay")){
+
+        let overlay = document.createElement("div");
+
+        overlay.id = "porukaOdsustvaOverlay";
+
+        overlay.className = "poruka-overlay";
+
+        overlay.innerHTML = `
+
+            <div class="poruka-prozor">
+
+                <h3>
+                    ✉️ Poruka roditelju
+                </h3>
+
+
+                <textarea
+                    id="tekstPorukeOdsustva"
+                    class="poruka-tekst"
+                ></textarea>
+
+
+<div class="poruka-dugmad">
+
+    <button
+        type="button"
+        class="posalji-viber-poruku"
+        onclick="kopirajPorukuOdsustva()"
+    >
+        📋 KOPIRAJ PORUKU
+    </button>
+
+
+    <a
+        id="posaljiViberIzPoruke"
+        class="posalji-viber-poruku"
+        href="#"
+    >
+        📱 POŠALJI NA VIBER
+    </a>
+
+
+    <button
+        type="button"
+        class="zatvori-poruku"
+        onclick="zatvoriPorukuOdsustva()"
+    >
+        ✕ ZATVORI
+    </button>
+
+</div>
+
+            </div>
+
+        `;
+
+        document.body.appendChild(overlay);
+
+    }
+
+}
+
+
+/* OTVARA PROZOR SA PORUKOM */
+
+function otvoriPorukuOdsustva(index){
+
+    let podatak = porukeOdsustva[index];
+
+    if(!podatak){
+        return;
+    }
+
+
+    let overlay =
+        document.getElementById("porukaOdsustvaOverlay");
+
+    let tekst =
+        document.getElementById("tekstPorukeOdsustva");
+
+    let viber =
+        document.getElementById("posaljiViberIzPoruke");
+
+
+    tekst.value = podatak.poruka;
+
+
+    if(podatak.viberLink){
+
+        viber.href = podatak.viberLink;
+
+        viber.style.display = "inline-block";
+
+    }else{
+
+        viber.href = "#";
+
+        viber.style.display = "none";
+
+    }
+
+
+    overlay.style.display = "flex";
+
+}
+
+
+/* ZATVARA PROZOR */
+
+function zatvoriPorukuOdsustva(){
+
+    let overlay =
+        document.getElementById("porukaOdsustvaOverlay");
+
+    if(overlay){
+
+        overlay.style.display = "none";
+
+    }
+
+}
+
+function kopirajPorukuOdsustva(){
+
+    let tekst =
+        document.getElementById("tekstPorukeOdsustva");
+
+    if(!tekst){
+        return;
+    }
+
+    navigator.clipboard.writeText(tekst.value)
+        .then(function(){
+
+            let dugme =
+                document.querySelector(
+                    '[onclick="kopirajPorukuOdsustva()"]'
+                );
+
+            if(dugme){
+
+                let stariTekst = dugme.innerHTML;
+
+                dugme.innerHTML = "✅ KOPIRANO!";
+
+                setTimeout(function(){
+
+                    dugme.innerHTML = stariTekst;
+
+                }, 1500);
+
+            }
+
+        })
+        .catch(function(){
+
+            /* Rezervna opcija ako clipboard nije dostupan */
+
+            tekst.select();
+
+            document.execCommand("copy");
+
+            alert("Poruka je kopirana.");
+
+        });
 
 }
 
