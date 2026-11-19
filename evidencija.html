@@ -979,44 +979,58 @@ if(roditelj && roditelj.telefon){
         .replace(/\(/g, "")
         .replace(/\)/g, "");
 
-    /*
-        Ako je broj unet kao 06...
-        pretvaramo ga u +381...
-    */
-
+    // Ako je broj unet kao 06...
     if(broj.startsWith("06")){
-
         broj = "+381" + broj.substring(1);
-
     }
 
-    let viberBroj =
-        encodeURIComponent(broj);
-
+    // Ako je broj unet bez +381
+    if(broj.startsWith("381")){
+        broj = "+" + broj;
+    }
 
     let poruka =
         "Poštovani " +
         (roditelj.imeRoditelja || "") +
-        ", obaveštavamo Vas da " +
+        ",\n\n" +
+
+        "obaveštavamo Vas da Vaše dete " +
         igrac.ime +
-        " nije prisustvovao poslednja tri treninga. " +
-        "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva. Hvala.";
+        " nije prisustvovalo poslednja tri treninga.\n\n" +
 
+        "Datumi odsustva: " +
+        igrac.treninzi
+            .map(t => formatirajDatum(t.datum))
+            .join(", ") +
+        ".\n\n" +
 
-    let viberPoruka =
-        encodeURIComponent(poruka);
+        "Molimo Vas da nas obavestite ukoliko postoji razlog odsustva.\n\n" +
 
+        "Hvala na razumevanju.\n" +
+        "KK TEMPO BRATUNAC";
+
+    let viberPoruka = encodeURIComponent(poruka);
+
+    let viberLink =
+        "viber://chat?number=" +
+        encodeURIComponent(broj) +
+        "&text=" +
+        viberPoruka;
 
     viberDugme = `
-        <a
-            class="viber-dugme"
-            href="viber://chat?number=${viberBroj}&text=${viberPoruka}"
-        >
-            📱 VIBER — KONTAKTIRAJ RODITELJA
+        <a href="${viberLink}" class="viber-dugme">
+            📱 POŠALJI VIBER
         </a>
     `;
 
 }else{
+
+    viberDugme = `
+        <div class="nema-telefona">
+            ⚠️ Nije unet broj telefona roditelja.
+        </div>
+    `;
+}
 
     viberDugme = `
         <div class="nema-telefona">
